@@ -4,31 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Orbita</title>
+    <!-- Favicon / Home Screen Icon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id='g' cx='30%' cy='30%' r='100%'><stop offset='0%' stop-color='%235dade2'/><stop offset='100%' stop-color='%232980b9'/></radialGradient></defs><rect width='100' height='100' rx='20' fill='%231e293b'/><circle cx='50' cy='50' r='30' fill='url(%23g)'/></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id='g' cx='30%' cy='30%' r='100%'><stop offset='0%' stop-color='%235dade2'/><stop offset='100%' stop-color='%232980b9'/></radialGradient></defs><rect width='100' height='100' rx='20' fill='%231e293b'/><circle cx='50' cy='50' r='30' fill='url(%23g)'/></svg>">
     
     <style>
         :root { --primary: #3498db; --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --accent: #2ecc71; --danger: #e74c3c; --hold: #6c5ce7; }
         
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 450px; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; overflow-x: hidden; overflow-y: auto; }
         
-        h1 { font-size: 2.2rem; margin: 10px 0 5px 0; color: var(--primary); text-align: center; font-weight: 300; letter-spacing: 2px; }
-        .subtitle { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 20px; cursor: pointer; text-decoration: underline; }
+        .container { 
+            width: 100%; 
+            max-width: 450px; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 { font-size: 2.2rem; margin: 10px 0 5px 0; color: var(--primary); text-align: center; font-weight: 300; letter-spacing: 2px; width: 100%; }
+        .subtitle { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 5px; cursor: pointer; text-decoration: underline; display: block; width: 100%; }
 
-        .category-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--primary); margin: 30px 0 10px 5px; letter-spacing: 1.5px; }
-        .ex-button { background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); }
+        /* Ambient Selector */
+        .ambient-nav { width: 100%; text-align: center; margin-bottom: 20px; }
+        #ambient-selector { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: var(--muted); 
+            padding: 8px 12px; 
+            border-radius: 10px; 
+            font-size: 0.8rem;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        #exercise-list { width: 100%; }
+
+        .category-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--primary); margin: 30px 0 10px 5px; letter-spacing: 1.5px; width: 100%; text-align: left; }
+        
+        .ex-button { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 22px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            width: 100%;
+            box-sizing: border-box;
+        }
         .ex-name { font-weight: bold; font-size: 1.15rem; margin-bottom: 8px; display: block; }
         
-        /* Overlays - Fixed Transparency and Layering */
-        .overlay-view { position: fixed; inset: 0; background: var(--bg); z-index: 1000; padding: 25px; overflow-y: auto; display: none; flex-direction: column; }
+        /* Opaque Full-Screen Overlays */
+        .overlay-view { position: fixed; inset: 0; background: var(--bg); z-index: 1000; padding: 25px; overflow-y: auto; display: none; flex-direction: column; align-items: center; }
         
-        .quick-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+        .quick-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; width: 100%; }
         .stat-pill { background: var(--card-bg); padding: 15px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
         .stat-label { display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
         .stat-val { font-weight: bold; font-size: 1.2rem; color: var(--primary); }
         
         #session-view { z-index: 2000; justify-content: space-between; padding: 60px 20px 30px 20px; overflow: hidden; display: none; flex-direction: column; align-items: center; }
+        .session-header { text-align: center; width: 100%; }
         .orb-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
         
         .orb { 
@@ -36,10 +77,10 @@
             background: radial-gradient(circle at 35% 35%, #5dade2, #2980b9); 
             box-shadow: 0 0 40px rgba(52, 152, 219, 0.4); 
             display: flex; align-items: center; justify-content: center; 
-            transition: width 0.1s linear, height 0.1s linear, background 0.5s ease; 
+            transition: width 0.1s linear, height 0.1s linear, background 0.6s ease; 
         }
-        .orb.exhale { background: radial-gradient(circle at 35% 35%, #48c9b0, #16a085); box-shadow: 0 0 40px rgba(22, 160, 133, 0.4); }
-        .orb.hold { background: radial-gradient(circle at 35% 35%, #a29bfe, #6c5ce7); box-shadow: 0 0 40px rgba(108, 92, 231, 0.4); }
+        .orb.exhale { background: radial-gradient(circle at 35% 35%, #48c9b0, #16a085); }
+        .orb.hold { background: radial-gradient(circle at 35% 35%, #a29bfe, #6c5ce7); }
         
         #orb-timer { font-size: 1.8rem; font-weight: 800; color: white; pointer-events: none; }
         .orb.glowing { box-shadow: 0 0 100px rgba(108, 92, 231, 0.8); }
@@ -49,64 +90,77 @@
         .btn { padding: 18px; border-radius: 16px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-outline { background: transparent; border: 2px solid var(--muted); color: var(--muted); }
-        .btn-stop { background: var(--danger); color: white; width: 80%; }
-        .btn-reset { background: #34495e; color: white; width: 80%; }
+        .btn-stop { background: var(--danger); color: white; width: 85%; }
 
-        .setup-row { margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; }
+        .setup-row { margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 15px; text-align: center; width: 100%; box-sizing: border-box; }
         .setup-row input { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--primary); color: white; font-size: 1.5rem; text-align: center; outline: none; }
 
-        /* Scrollable Guide Modal */
         #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: var(--card-bg); border-radius: 24px; padding: 30px; max-height: 85vh; overflow-y: auto; width: 100%; max-width: 450px; }
 
         .hidden { display: none !important; }
-        .history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; }
-        .history-item.new-record { border: 1px solid var(--accent); background: rgba(46, 204, 113, 0.1); color: var(--accent); }
-        .rationale-text { line-height: 1.6; color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; }
+        .history-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; width: 100%; box-sizing: border-box; }
+        .rationale-text { line-height: 1.6; color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; text-align: left; }
     </style>
 </head>
 <body>
 
+    <audio id="silent-track" loop preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav">
+    </audio>
+
     <div class="container" id="home-view">
         <h1>ORBITA</h1>
-        <div class="subtitle" onclick="showInstructions()">Guide & Goals ⓘ</div>
+        <div class="subtitle" onclick="showInstructions()">Guide & Rationale â“˜</div>
+        <div class="ambient-nav">
+            <select id="ambient-selector">
+                <option value="hum">Track: Cosmic Hum</option>
+                <option value="nebula">Track: Pulsing Nebula</option>
+                <option value="shimmer">Track: Crystalline Resonance</option>
+                <option value="none">Track: None</option>
+            </select>
+        </div>
         <div id="exercise-list"></div>
     </div>
 
     <!-- DETAIL VIEW -->
     <div id="detail-view" class="overlay-view">
-        <div onclick="closeViews()" style="color:var(--primary); font-weight:bold; margin-bottom:20px; cursor:pointer;">✕ CLOSE</div>
-        <h2 id="det-name" style="font-size:2.2rem; margin:0; font-weight:bold;">---</h2>
-        <div class="quick-stats" id="det-stats"></div>
-        <div id="exercise-description" class="rationale-text"></div>
-        
-        <div id="safety-container" style="background: rgba(231, 76, 60, 0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px;">
-            <strong>SAFETY:</strong> <span id="det-safety"></span>
-        </div>
+        <div class="container">
+            <div onclick="closeViews()" style="color:var(--primary); font-weight:bold; margin-bottom:20px; cursor:pointer; align-self: flex-start;">âœ• CLOSE</div>
+            <h2 id="det-name" style="font-size:2.2rem; margin:0; font-weight:bold; align-self: flex-start;">---</h2>
+            <div class="quick-stats" id="det-stats"></div>
+            <div id="exercise-description" class="rationale-text"></div>
+            
+            <div id="safety-container" style="background: rgba(231, 76, 60, 0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
+                <strong>SAFETY:</strong> <span id="det-safety"></span>
+            </div>
 
-        <div id="history-container" class="hidden">
-            <h3 id="history-title" style="margin-top:10px; color:var(--primary); font-weight:bold; font-size:0.9rem; letter-spacing:1px;">HISTORY</h3>
-            <div id="history-list"></div>
-        </div>
+            <div id="history-container" class="hidden" style="width: 100%;">
+                <h3 id="history-title" style="margin-top:10px; color:var(--primary); font-weight:bold; font-size:0.9rem; letter-spacing:1px;">HISTORY</h3>
+                <div id="history-list"></div>
+            </div>
 
-        <div style="margin-top:auto; padding-top:20px;">
-            <button class="btn btn-primary" onclick="startSession()">START SESSION</button>
-            <button class="btn btn-outline" id="tailor-trigger" onclick="showTailor()">TAILOR TIMINGS</button>
+            <div style="margin-top:auto; padding-top:20px; width: 100%;">
+                <button class="btn btn-primary" onclick="startSession()">START SESSION</button>
+                <button class="btn btn-outline" id="tailor-trigger" onclick="showTailor()">TAILOR TIMINGS</button>
+            </div>
         </div>
     </div>
 
     <!-- TAILOR VIEW -->
     <div id="tailor-view" class="overlay-view">
-        <div onclick="hideTailor()" style="color:var(--primary); font-weight:bold; margin-bottom:20px; cursor:pointer;">❮ CANCEL</div>
-        <h2 style="text-align:center; font-weight:bold;">TAILOR</h2>
-        <div id="tailor-inputs"></div>
-        <button class="btn btn-primary" onclick="saveTailor()">SAVE CHANGES</button>
-        <button class="btn btn-outline" onclick="resetToDefault()" style="border-color:var(--danger); color:var(--danger);">RESET TO DEFAULT</button>
+        <div class="container">
+            <div onclick="hideTailor()" style="color:var(--primary); font-weight:bold; margin-bottom:20px; cursor:pointer; align-self: flex-start;">â® CANCEL</div>
+            <h2 style="text-align:center; font-weight:bold;">TAILOR</h2>
+            <div id="tailor-inputs" style="width: 100%;"></div>
+            <button class="btn btn-primary" onclick="saveTailor()">SAVE CHANGES</button>
+            <button class="btn btn-outline" onclick="resetToDefault()" style="border-color:var(--danger); color:var(--danger);">RESET TO DEFAULT</button>
+        </div>
     </div>
 
     <!-- SESSION VIEW -->
     <div id="session-view" class="overlay-view">
-        <div style="text-align:center; width:100%;">
+        <div class="session-header">
             <div id="phase-title" style="font-size: 2.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px;">PREPARE</div>
             <div id="coaching-cue" style="font-size: 1rem; color: var(--muted); min-height: 2.5em; font-weight: 500;">Get ready...</div>
         </div>
@@ -116,7 +170,8 @@
         <div id="overall-timer">00:00</div>
         <div style="width:100%; text-align:center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
             <div id="special-controls" class="hidden" style="width:100%">
-                <button id="special-action-btn" class="btn btn-primary" style="background:var(--accent)" onclick="handleSpecialAction()">RECORD PAUSE</button>
+                <button id="special-action-btn" class="btn btn-primary" style="background:var(--accent)" onclick="handleSpecialAction()">STOP & RECORD</button>
+                <button class="btn" style="background:#34495e; width:80%;" onclick="startSession()">RESET / ERROR</button>
             </div>
             <button id="session-stop-btn" class="btn btn-stop" onclick="stopSession()">STOP SESSION</button>
         </div>
@@ -127,28 +182,9 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
             <div style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
-                <p><strong>The Bohr Effect:</strong> This is the foundation of Oxygen Advantage. It states that for oxygen to be released from your blood into your muscles and brain, you need a certain level of Carbon Dioxide (CO₂) in your blood. By training your body to tolerate higher levels of CO₂, you unlock your body's ability to oxygenate itself more efficiently.</p>
-                
-                <p><strong>Nasal Breathing:</strong> Unless an exercise specifies otherwise, always breathe through the nose. Nasal breathing increases Nitric Oxide production, which is a powerful vasodilator and helps protect the lungs.</p>
-
-                <p><strong>Practice Tips:</strong></p>
-                <ul>
-                    <li><strong>Environment:</strong> Sit upright with a straight spine or lie down in a quiet space.</li>
-                    <li><strong>Frequency:</strong> Aim for 10-20 minutes daily. Consistency is the primary driver of physiological change.</li>
-                    <li><strong>Effort:</strong> Breathwork should never feel like a struggle. If you feel panic or gasping, you have pushed too far. Return to normal nasal breathing.</li>
-                </ul>
-
-                <p><strong>The Assessments:</strong></p>
-                <p>The <strong>BOLT Score</strong> and <strong>Control Pause</strong> are tools to measure your progress. A healthy goal is 25 seconds; elite athletic performance often requires 40 seconds. Do not treat these as tests of willpower, but as honest checks of your current chemistry.</p>
-
-                <p><strong>Safety:</strong> Never practice breath-holding while driving or in water. If you feel lightheaded, distressed, or panicked, stop immediately. Consult a doctor if you have known cardiovascular or respiratory issues.</p>
-
-                <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;"><strong>Goal-Based Recommendations:</strong></p>
-                <p>• <strong>Calm & Recovery:</strong> Resonance 5.5, Extended Exhale.<br>
-                • <strong>Instant De-stress:</strong> Physiological Sigh (1-2 mins).<br>
-                • <strong>Improve Fitness:</strong> BOLT, Reduced Breathing, CP.<br>
-                • <strong>Deep Focus:</strong> Box Breathing.<br>
-                • <strong>Onset Sleep:</strong> Sleep 4:6, Humming Breath.</p>
+                <p><strong>Practice:</strong> Aim for 10-20 minutes daily. Nasal breathing is mandatory. If you gasp, stop immediately.</p>
+                <p><strong>The BOLT Score:</strong> CONDUCT: One nasal breath in, one out, then hold. Timer starts automatically. Stop at the first definite urge.</p>
+                <p><strong>Space Tracks:</strong> Orbita generates procedural drones to bypass the iPhone silent switch. Choose your track at the top of the menu.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
         </div>
@@ -156,105 +192,131 @@
 
     <script>
         const DEFAULTS = {
-            res_55: { name: "Resonance 5.5", cat: "❤️ HRV / Recovery", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The 'Gold Standard' for HRV training. At roughly 5.5 breaths per minute, your heart rate and brainwaves enter a state of 'Coherence.' Popular with pro athletes, surgeons, and tactical teams to maintain peak efficiency under pressure. It increases the reach of the parasympathetic nervous system.", safety: "Keep the breath light and quiet. Avoid taking deep, gasping inhales." },
-            ext_exh: { name: "Extended Exhale 4:6", cat: "😌 Relaxation", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "In Oxygen Advantage, a long exhale is the key to activating the Vagus Nerve. Longer exhales allow CO2 levels to rise slightly, which triggers the Bohr Effect—releasing more oxygen from your blood into your brain and muscles. Use this to down-regulate after high-stress activities.", safety: "If 6s feels like a strain, tailor it to 5s." },
-            box: { name: "Box Breathing", cat: "🎯 Focus", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "Famously popularized by the US Navy SEALs for 'Tactical Calm.' By introducing holds after both inhale and exhale, you stabilize the nervous system and clear 'mental fog.' It is a fundamental practice for building CO2 tolerance and emotional regulation before high-stakes events.", safety: "Ensure holds are relaxed pauses, not tensed closures." },
-            sigh: { name: "Physiological Sigh", cat: "😌 Reset", inhale: 2, inhale2: 1, exhale: 6, notes: "Stanford Huberman Lab identified this as the fastest way to dump excess CO2. You will see a 'stutter' expansion in the orb: one full inhale followed by a sharp second inhale to re-inflate the alveoli air sacs. This triggers immediate cardiac deceleration.", safety: "Limit to 2 minutes per session." },
-            sleep: { name: "Sleep 4:6", cat: "🌙 Sleep", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "A whisper-quiet rhythm for deep rest. There are no breath holds, just a gentle, sedating flow. Focus on the air being so light and quiet that even you cannot hear your own breathing as you drift off.", safety: "Practice while preparing for rest." },
-            red_br: { name: "Reduced Breathing", cat: "👃 CO₂ Tolerance", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "The core Buteyko/Oxygen Advantage practice. Breathe 20-30% less than you 'want' to, creating a 'tolerable air hunger.' This trains the brain to be less reactive to CO2, leading to better stamina and oxygen delivery. It stops chronic over-breathing.", safety: "Air hunger should be mild. Stop if you feel gasping or panic." },
-            cont_p: { name: "Control Pause", cat: "📊 Practice", inhale: 3, exhale: 3, notes: "The Control Pause (CP) is a repeated practice session. After a normal nasal exhale, pause until you feel the first definite desire to breathe. This app will time 5 rounds and record the session average to your history. Target: 25s for health, 40s for performance.", safety: "Measure of comfort, not willpower. Never force." },
-            gent_h: { name: "Gentle Exhale Hold", cat: "🫁 Breath Control", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "In the Oxygen Advantage, these 5-second 'mini pauses' prevent chronic over-breathing. They help reset the respiratory center and ensure oxygen reaches your cells efficiently via the Bohr Effect. Used widely in Buteyko to stabilize erratic breathing patterns.", safety: "The hold should feel effortless and relaxing." },
-            rel_478: { name: "4:7:8 Relaxation", cat: "😌 Relaxation", inhale: 4, holdIn: 7, exhale: 8, holdEx: 0, notes: "Andrew Weil's 'Natural Tranquilizer.' The long hold allows oxygen to fully saturate the blood, while the very long exhale triggers a deep vagal response. It is a potent tool for neutralizing acute anxiety.", safety: "Shorten timings proportionally if lightheaded." },
-            hum: { name: "Humming Breath", cat: "😌 Relaxation", inhale: 4, exhale: 8, notes: "Humming on the exhale significantly increases Nitric Oxide production. NO is a potent vasodilator and antiviral. The vibration also 'massages' the vagus nerve to induce profound calm and meditative stillness.", safety: "The hum should be soft and effortless." },
-            bolt: { name: "BOLT Score", cat: "📊 Assessment", inhale: 3, exhale: 3, notes: "Body Oxygen Level Test. CONDUCT: One normal nasal breath in, one normal nasal breath out, then hold. Timer starts automatically. STOP at the first definite urge to breathe (swallow or contraction). TARGETS: 10-20s common; 40s high-performance goal.", safety: "Sit quietly for 10 mins before testing. Not a max hold." }
+            res_55: { name: "Resonance 5.5", cat: "â¤ï¸ HRV / Recovery", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The 'Gold Standard' for HRV training. Popular with elite athletes and surgeons to maintain peak efficiency. It maximizes the reach of the parasympathetic nervous system.", safety: "Keep the breath light. Do not take gasping inhales." },
+            ext_exh: { name: "Extended Exhale 4:6", cat: "ðŸ˜Œ Relaxation", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "In Oxygen Advantage, a long exhale activates the Vagus Nerve. Use this to down-regulate after stress.", safety: "If 6s feels like a strain, tailor it to 5s." },
+            box: { name: "Box Breathing", cat: "ðŸŽ¯ Focus", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "Navy SEAL technique for 'Tactical Calm.' Equal phases stabilize the nervous system and clear 'mental fog.' Fundamental for building CO2 tolerance.", safety: "Ensure holds are relaxed pauses." },
+            sigh: { name: "Physiological Sigh", cat: "ðŸ˜Œ Stress Reset", inhale: 2, inhale2: 1, exhale: 6, notes: "Identified by Huberman Lab as the fastest dump for excess CO2. Orb stutter: one inhale, sharp second inhale, then long exhale.", safety: "Limit to 2 minutes per session." },
+            sleep: { name: "Sleep 4:6", cat: "ðŸŒ™ Sleep", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "A whisper-quiet rhythm for deep rest. Focus on the air being so light and quiet that even you cannot hear your own breathing.", safety: "Prepare for rest while practicing." },
+            red_br: { name: "Reduced Breathing", cat: "ðŸ‘ƒ COâ‚‚ Tolerance", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Core Buteyko practice. Breathe 20-30% less than you 'want' to, creating a 'tolerable air hunger.'", safety: "Air hunger should be mild." },
+            gent_h: { name: "Gentle Exhale Hold", cat: "ðŸ« Breath Control", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "Oxygen Advantage 'mini pauses' to prevent chronic over-breathing. Helps reset the respiratory center.", safety: "The hold should feel effortless." },
+            rel_478: { name: "4:7:8 Relaxation", cat: "ðŸ˜Œ Relaxation", inhale: 4, holdIn: 7, exhale: 8, holdEx: 0, notes: "Andrew Weil's 'Natural Tranquilizer.' Potent for neutralizing acute anxiety and inducing vagal response.", safety: "Shorten timings proportionally if lightheaded." },
+            hum: { name: "Humming Breath", cat: "ðŸ˜Œ Relaxation", inhale: 4, exhale: 8, notes: "Humming increases Nitric Oxide production up to 15x. Meditative stillness through vibration.", safety: "The hum should be soft." },
+            bolt: { name: "BOLT Score", cat: "ðŸ“Š Assessment", inhale: 3, exhale: 3, notes: "Measures COâ‚‚ tolerance. CONDUCT: Normal nasal breath in, normal nasal out, then hold. Timer starts automatically.", safety: "Sit quietly for 10 mins before testing." }
         };
 
-        let currentId = null, 
-            tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v10')) || {}, 
-            boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v10')) || [],
-            cpHistory = JSON.parse(localStorage.getItem('Orbita_cp_v10')) || [],
-            sessionCpVals = [], lastNewResult = null;
+        const CUES = {
+            Inhale: ["Expand your belly", "Breathe into ribs", "Soft inhale", "Fill the lower lungs"],
+            Exhale: ["Let it fall out", "Soften your jaw", "Release all tension", "Sigh it away"],
+            Hold: ["Find the stillness", "Relax into the pause", "Stay perfectly still", "Mind quiet, body soft"]
+        };
 
-        let audioCtx = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
-
-        const CATEGORIES = [
-            { name: "❤️ HRV / Recovery", ids: ["res_55"] },
-            { name: "😌 Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] },
-            { name: "🌙 Sleep", ids: ["sleep"] },
-            { name: "🎯 Focus", ids: ["box"] },
-            { name: "👃 Nasal / CO₂ Tolerance", ids: ["red_br"] },
-            { name: "🫁 Breath Control", ids: ["gent_h"] },
-            { name: "📊 Assessment", ids: ["bolt", "cont_p"] }
-        ];
-
-        const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Find stillness", "Silence", "Soften into pause"] };
+        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v19')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v19')) || [];
+        let audioCtx = null, droneNodes = [], sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
         function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
-        function playBreath(type, duration, isStutter = false) {
-            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bufferSize = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate); const data = buffer.getChannelData(0);
-            let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0;
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                b0 = 0.99886 * b0 + white * 0.0555179; b1 = 0.99332 * b1 + white * 0.0750759;
-                b2 = 0.96900 * b2 + white * 0.1538520; b3 = 0.86650 * b3 + white * 0.3104856;
-                b4 = 0.55000 * b4 + white * 0.5329522; b5 = -0.7616 * b5 - white * 0.0168980;
-                data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + white * 0.5362) * 0.07;
+        
+        function startSpaceDrone() {
+            const ctx = getAudio();
+            const type = document.getElementById('ambient-selector').value;
+            if (type === 'none' || droneNodes.length > 0) return;
+            
+            const mainGain = ctx.createGain();
+            mainGain.gain.setValueAtTime(0, ctx.currentTime);
+            mainGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 3);
+            mainGain.connect(ctx.destination);
+
+            if (type === 'hum') {
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(55, ctx.currentTime);
+                osc.connect(mainGain);
+                osc.start();
+                droneNodes.push(osc);
+            } else if (type === 'nebula') {
+                const osc = ctx.createOscillator();
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(60, ctx.currentTime);
+                lfo.frequency.setValueAtTime(0.12, ctx.currentTime);
+                lfoGain.gain.setValueAtTime(0.02, ctx.currentTime);
+                lfo.connect(lfoGain);
+                lfoGain.connect(mainGain.gain);
+                osc.connect(mainGain);
+                osc.start(); lfo.start();
+                droneNodes.push(osc, lfo);
+            } else if (type === 'shimmer') {
+                [110, 220, 440, 880].forEach(freq => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                    g.gain.setValueAtTime(0.01, ctx.currentTime);
+                    osc.connect(g); g.connect(mainGain);
+                    osc.start();
+                    droneNodes.push(osc);
+                });
             }
+            droneNodes.push(mainGain);
+        }
+
+        function stopSpaceDrone() {
+            droneNodes.forEach(node => {
+                try { if (node.stop) node.stop(); } catch(e) {}
+            });
+            droneNodes = [];
+        }
+
+        function playBreath(type, duration) {
+            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.18;
             noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
+
             if (type === 'in') {
-                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(800, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime);
-                if(isStutter) {
-                    gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + duration * 0.4);
-                    gain.gain.setValueAtTime(0.05, ctx.currentTime + duration * 0.5);
-                    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + duration * 0.8);
-                } else { gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + duration * 0.5); }
+                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.2); 
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
-                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.linearRampToValueAtTime(200, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0.2, ctx.currentTime); gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+                gain.gain.setValueAtTime(0, ctx.currentTime); 
+                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.3); 
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
         }
 
         function renderHome() {
-            document.getElementById('exercise-list').innerHTML = CATEGORIES.map(cat => `
+            const catLayout = [
+                { name: "â¤ï¸ HRV / Recovery", ids: ["res_55"] }, { name: "ðŸ˜Œ Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, { name: "ðŸŒ™ Sleep", ids: ["sleep"] }, { name: "ðŸŽ¯ Focus", ids: ["box"] }, { name: "ðŸ‘ƒ Nasal / COâ‚‚ Tolerance", ids: ["red_br"] }, { name: "ðŸ« Breath Control", ids: ["gent_h"] }, { name: "ðŸ“Š Assessment", ids: ["bolt"] }
+            ];
+            document.getElementById('exercise-list').innerHTML = catLayout.map(cat => `
                 <div class="category-title">${cat.name}</div>
-                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><span style="color:var(--primary); font-weight:bold;">❯</span></div>`).join('')}
+                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><span style="color:var(--primary); font-weight:bold;">â¯</span></div>`).join('')}
             `).join('');
         }
 
         function showDetail(id) {
             currentId = id; const ex = DEFAULTS[id], t = tailorData[id] || ex;
+            document.getElementById('home-view').style.display = 'none';
             document.getElementById('det-name').innerText = ex.name; 
             document.getElementById('exercise-description').innerText = ex.notes;
             document.getElementById('det-safety').innerText = ex.safety;
             document.getElementById('safety-container').classList.toggle('hidden', id === 'sleep');
-            
             let stats = `<div class="stat-pill"><span class="stat-label">Inhale</span><span class="stat-val">${t.inhale}s</span></div>`;
             if (t.holdIn > 0) stats += `<div class="stat-pill"><span class="stat-label">Hold</span><span class="stat-val">${t.holdIn}s</span></div>`;
             stats += `<div class="stat-pill"><span class="stat-label">Exhale</span><span class="stat-val">${t.exhale}s</span></div>`;
             if (t.holdEx > 0) stats += `<div class="stat-pill"><span class="stat-label">Hold</span><span class="stat-val">${t.holdEx}s</span></div>`;
-            if (id === 'cont_p') stats = `<div class="stat-pill" style="grid-column: span 2"><span class="stat-label">Practice</span><span class="stat-val">Live Round Averaging</span></div>`;
-            
             document.getElementById('det-stats').innerHTML = stats;
-            const hasHist = (id === 'bolt' || id === 'cont_p');
-            document.getElementById('history-container').classList.toggle('hidden', !hasHist);
-            document.getElementById('tailor-trigger').classList.toggle('hidden', id === 'bolt' || id === 'sigh' || id === 'cont_p');
-            if (hasHist) renderHistory(id);
+            document.getElementById('history-container').classList.toggle('hidden', id !== 'bolt');
+            document.getElementById('tailor-trigger').classList.toggle('hidden', id === 'bolt' || id === 'sigh');
+            if (id === 'bolt') renderHistory();
             document.getElementById('detail-view').style.display = 'flex';
+            window.scrollTo(0,0);
         }
 
-        function renderHistory(id) {
-            const list = id === 'bolt' ? boltHistory : cpHistory;
-            document.getElementById('history-title').innerText = id === 'bolt' ? 'BOLT SCORE HISTORY' : 'CP SESSION AVERAGES';
-            document.getElementById('history-list').innerHTML = list.map((h, i) => `
-                <div class="history-item ${lastNewResult === h.id ? 'new-record' : ''}">
-                    <span>${h.date}</span>
-                    <span>${h.score}s</span>
-                </div>
-            `).join('');
+        function renderHistory() {
+            document.getElementById('history-list').innerHTML = boltHistory.map(h => `<div class="history-item"><span>${h.date}</span><span>${h.score}s</span></div>`).join('');
         }
 
         function showTailor() {
@@ -266,36 +328,31 @@
         function saveTailor() {
             if (!tailorData[currentId]) tailorData[currentId] = { ...DEFAULTS[currentId] };
             ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { const el = document.getElementById(`tailor-${f}`); if (el) tailorData[currentId][f] = parseFloat(el.value); });
-            localStorage.setItem('Orbita_tailor_v10', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
+            localStorage.setItem('Orbita_tailor_v19', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
         }
 
-        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v10', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
+        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v19', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
 
         async function startSession() {
-            getAudio().resume(); if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+            getAudio().resume(); document.getElementById('silent-track').play().catch(()=>{});
+            startSpaceDrone();
+            if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
             document.getElementById('session-view').style.display = 'flex';
             const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
             void orb.offsetWidth;
-            
-            document.getElementById('overall-timer').classList.toggle('hidden', currentId === 'bolt' || currentId === 'cont_p');
             startTime = Date.now();
-            if (currentId !== 'bolt' && currentId !== 'cont_p') {
-                overallInterval = setInterval(() => {
-                    const diff = Math.floor((Date.now() - startTime) / 1000);
-                    document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`;
-                }, 1000);
-            }
-            if (currentId === 'bolt') runBoltSequence(); 
-            else if (currentId === 'cont_p') { sessionCpVals = []; runCPRound(); }
-            else if (currentId === 'sigh') runSighSequence(); 
-            else runLoopSequence();
+            if (currentId !== 'bolt') overallInterval = setInterval(() => { const diff = Math.floor((Date.now() - startTime) / 1000); document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`; }, 1000);
+            if (currentId === 'bolt') runBoltSequence(); else if (currentId === 'sigh') runSighSequence(); else runLoopSequence();
         }
 
         function stopSession() {
             clearTimeout(sessionTimeout); clearInterval(phaseInterval); clearInterval(overallInterval);
+            document.getElementById('silent-track').pause();
+            stopSpaceDrone();
             if (wakeLock) wakeLock.release().then(() => wakeLock = null);
             document.getElementById('session-view').style.display = 'none';
             document.getElementById('special-controls').classList.add('hidden');
+            document.getElementById('session-stop-btn').classList.remove('hidden');
             document.getElementById('session-stop-btn').innerText = "STOP SESSION";
             document.getElementById('orb').className = 'orb';
             document.getElementById('orb-timer').innerText = "";
@@ -303,20 +360,19 @@
 
         function animate(step) {
             document.getElementById('phase-title').innerText = step.n;
+            const cues = CUES[step.n.includes('In')?'Inhale':step.n.includes('Ex')?'Exhale':'Hold'];
+            document.getElementById('coaching-cue').innerText = cues[Math.floor(Math.random() * cues.length)];
             const orb = document.getElementById('orb');
             orb.className = 'orb ' + (step.n.toLowerCase().includes('exhale') ? 'exhale' : step.n.toLowerCase().includes('hold') ? 'hold' : '');
-            
             if (step.n === 'Hold') { orb.style.transition = 'none'; orb.classList.add('glowing'); }
             else if (step.n === 'Dip') { orb.style.transition = 'all 0.2s ease-in-out'; orb.style.width = `${step.s * 100}px`; orb.style.height = `${step.s * 100}px`; }
             else { orb.style.transition = `width ${step.t}s linear, height ${step.t}s linear`; orb.classList.remove('glowing'); orb.style.width = `${step.s * 100}px`; orb.style.height = `${step.s * 100}px`; }
-
-            if (step.sd) playBreath(step.sd, step.t, step.stutter);
-            
+            if (step.sd) playBreath(step.sd, step.t);
             let timeLeft = step.t;
             clearInterval(phaseInterval);
             phaseInterval = setInterval(() => {
                 timeLeft -= 0.1; if (timeLeft < 0) timeLeft = 0;
-                let disp = currentId === 'res_55' ? (timeLeft > 5 ? "5.5" : Math.ceil(timeLeft)) : Math.ceil(timeLeft);
+                let disp = currentId === 'res_55' ? (timeLeft > 5.0 ? "5.5" : Math.ceil(timeLeft)) : Math.ceil(timeLeft);
                 document.getElementById('orb-timer').innerText = (disp == 0) ? "" : disp;
             }, 100);
         }
@@ -338,38 +394,12 @@
             play();
         }
 
-        let boltStart = 0;
         function runBoltSequence() {
             const seq = [{ n: 'Prep In', t: 3, s: 1.6, sd: 'in' }, { n: 'Prep Out', t: 3, s: 1, sd: 'out' }];
             let i = 0; const play = () => {
                 if (i >= seq.length) {
-                    boltStart = Date.now();
-                    document.getElementById('phase-title').innerText = "HOLD";
-                    document.getElementById('orb').className = 'orb hold glowing';
-                    document.getElementById('special-controls').classList.remove('hidden');
-                    document.getElementById('special-action-btn').innerText = "STOP & RECORD";
-                    document.getElementById('session-stop-btn').innerText = "RESET / ERROR";
-                    clearInterval(phaseInterval);
-                    phaseInterval = setInterval(() => { document.getElementById('orb-timer').innerText = Math.floor((Date.now() - boltStart) / 1000); }, 200);
-                    return;
-                }
-                animate(seq[i]); sessionTimeout = setTimeout(() => { i++; play(); }, 3000);
-            };
-            play();
-        }
-
-        function runCPRound() {
-            const seq = [{ n: 'Prep In', t: 3, s: 1.6, sd: 'in' }, { n: 'Prep Out', t: 3, s: 1, sd: 'out' }];
-            let i = 0; const play = () => {
-                if (i >= seq.length) {
-                    boltStart = Date.now();
-                    document.getElementById('phase-title').innerText = "PAUSE";
-                    document.getElementById('orb').className = 'orb hold glowing';
-                    document.getElementById('special-controls').classList.remove('hidden');
-                    document.getElementById('special-action-btn').innerText = "RECORD PAUSE";
-                    clearInterval(phaseInterval);
-                    phaseInterval = setInterval(() => { document.getElementById('orb-timer').innerText = Math.floor((Date.now() - boltStart) / 1000); }, 200);
-                    return;
+                    let bS = Date.now(); document.getElementById('phase-title').innerText = "HOLD"; document.getElementById('orb').className = 'orb hold glowing'; document.getElementById('special-controls').classList.remove('hidden'); document.getElementById('session-stop-btn').classList.add('hidden');
+                    clearInterval(phaseInterval); phaseInterval = setInterval(() => { const elapsed = Math.floor((Date.now() - bS) / 1000); document.getElementById('orb-timer').innerText = elapsed; startTime = bS; }, 200); return;
                 }
                 animate(seq[i]); sessionTimeout = setTimeout(() => { i++; play(); }, 3000);
             };
@@ -377,30 +407,14 @@
         }
 
         function handleSpecialAction() {
-            const val = Math.floor((Date.now() - boltStart) / 1000);
-            const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
-            if(currentId === 'bolt') {
-                const res = { id: Date.now(), score: val, date: ds };
-                boltHistory.unshift(res); lastNewResult = res.id;
-                localStorage.setItem('Orbita_bolt_v10', JSON.stringify(boltHistory));
-                stopSession(); showDetail('bolt');
-            } else {
-                sessionCpVals.push(val);
-                if(sessionCpVals.length >= 5) {
-                    const avg = Math.round(sessionCpVals.reduce((a,b)=>a+b) / 5);
-                    const res = { id: Date.now(), score: avg, date: ds };
-                    cpHistory.unshift(res); lastNewResult = res.id;
-                    localStorage.setItem('Orbita_cp_v10', JSON.stringify(cpHistory));
-                    stopSession(); showDetail('cont_p');
-                } else { document.getElementById('special-controls').classList.add('hidden'); runCPRound(); }
-            }
+            const val = Math.floor((Date.now() - startTime) / 1000); const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v19', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
         }
 
         function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
-        function closeViews() { document.getElementById('detail-view').style.display = 'none'; lastNewResult = null; }
+        function closeViews() { document.getElementById('detail-view').style.display = 'none'; document.getElementById('home-view').style.display = 'flex'; }
         function showInstructions() { document.getElementById('modal-overlay').style.display = 'flex'; }
         function closeInstructions() { document.getElementById('modal-overlay').style.display = 'none'; }
-
         renderHome();
     </script>
 </body>
