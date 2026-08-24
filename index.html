@@ -50,12 +50,11 @@
 </head>
 <body>
 
-    <!-- Reliable Public Domain Audio Links -->
-    <audio id="track-1" loop crossorigin="anonymous"><source src="https://ia800305.us.archive.org/28/items/AmbientDrone01/AmbientDrone01.mp3" type="audio/mpeg"></audio>
-    <audio id="track-2" loop crossorigin="anonymous"><source src="https://ia801004.us.archive.org/32/items/AtmosphericAmbientDrone/Atmospheric%20Ambient%20Drone.mp3" type="audio/mpeg"></audio>
-    <audio id="track-3" loop crossorigin="anonymous"><source src="https://ia902206.us.archive.org/24/items/ambient-drone-05-2022/Ambient%20Drone%2005-2022.mp3" type="audio/mpeg"></audio>
-    <audio id="track-4" loop crossorigin="anonymous"><source src="https://ia800501.us.archive.org/2/items/relaxing-meditation-ambient-music/Relaxing%20Meditation%20Ambient%20Music.mp3" type="audio/mpeg"></audio>
-    <audio id="track-5" loop crossorigin="anonymous"><source src="https://ia800203.us.archive.org/1/items/tibetan-singing-bowl-meditation/tibetan-singing-bowl-meditation.mp3" type="audio/mpeg"></audio>
+    <!-- Local Media Files -->
+    <audio id="track-1" loop><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop><source src="The Enclosing Mist.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
     <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
@@ -64,11 +63,10 @@
         
         <div class="ambient-nav">
             <select id="ambient-selector">
-                <option value="track-1">Track: Deep Space Hum</option>
-                <option value="track-2">Track: Stellar Wind</option>
-                <option value="track-3">Track: Cosmic Pulse</option>
-                <option value="track-4">Track: Zen Void</option>
-                <option value="track-5">Track: Tibetan Bowl Style</option>
+                <option value="track-1">Track: Soft Ambient Drone</option>
+                <option value="track-2">Track: The Enclosing Mist</option>
+                <option value="track-3">Track: Relaxing Meditation</option>
+                <option value="track-4">Track: Tibetan Bowl</option>
                 <option value="track-none">Track: No Audio (Silent)</option>
             </select>
         </div>
@@ -133,7 +131,7 @@
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
             <div style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
                 <p><strong>Bohr Effect:</strong> To release oxygen effectively, you must tolerate higher CO₂ levels. This app trains that tolerance.</p>
-                <p><strong>Audio:</strong> Tracks bypass the silent switch. Ensure <strong>Media Volume</strong> is up. If you hear nothing, check your connection to the track sources.</p>
+                <p><strong>Audio:</strong> Tracks play from your local device folder. Check that filenames match exactly.</p>
                 <p><strong>Resonance:</strong> Logic specifically shows 5.5 for high-precision coherence breathing.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
@@ -165,7 +163,15 @@
             const val = document.getElementById('ambient-selector').value;
             if (val === 'track-none') return;
             activeTrack = document.getElementById(val);
-            if (activeTrack) { activeTrack.currentTime = 0; activeTrack.play().catch(()=>{}); }
+            if (activeTrack) { 
+                activeTrack.currentTime = 0; 
+                let playPromise = activeTrack.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Audio file not found: " + val);
+                    });
+                }
+            }
         }
 
         function playBreath(type, duration) {
@@ -181,7 +187,7 @@
             } else {
                 filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2); // SMOOTH 1.2s onset
+                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2);
                 gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
