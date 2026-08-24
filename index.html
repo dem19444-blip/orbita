@@ -70,9 +70,7 @@
                 <option value="track-none">Track: No Audio (Silent)</option>
             </select>
         </div>
-        <div id="exercise-list">
-            <!-- Exercises will be injected here -->
-        </div>
+        <div id="exercise-list"></div>
     </div>
 
     <!-- DETAIL VIEW -->
@@ -128,7 +126,6 @@
         </div>
     </div>
 
-    <!-- MODAL GUIDE -->
     <div id="modal-overlay" onclick="closeInstructions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
@@ -157,90 +154,56 @@
 
         const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
 
-        let currentId = null, tailorData = {}, boltHistory = [], audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
+        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [], lastNewResult = null;
+        let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
-        // Initialize with error handling
-        try {
-            tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {};
-            boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
-        } catch(e) {
-            console.error("Storage error, resetting...");
-            tailorData = {}; boltHistory = [];
-        }
-
-        function renderHome() {
-            const listEl = document.getElementById('exercise-list');
-            if (!listEl) return;
-            
-            const catLayout = [
-                { name: "HRV / Recovery", ids: ["res_55"] }, 
-                { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
-                { name: "Sleep", ids: ["sleep"] }, 
-                { name: "Focus", ids: ["box"] }, 
-                { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
-                { name: "Breath Control", ids: ["gent_h"] }, 
-                { name: "Assessment", ids: ["bolt"] }
-            ];
-
-            listEl.innerHTML = catLayout.map(cat => `
-                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
-                ${cat.ids.map(id => `
-                    <div class="ex-button" onclick="showDetail('${id}')">
-                        <div>
-                            <span class="ex-name">${DEFAULTS[id].name}</span>
-                            <span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span>
-                        </div>
-                        <svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                    </div>
-                `).join('')}
-            `).join('');
-        }
-
-        function getAudio() { 
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-            return audioCtx; 
-        }
+        function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
         
         function startAmbient() {
             const val = document.getElementById('ambient-selector').value;
             if (val === 'track-none') return;
             activeTrack = document.getElementById(val);
             if (activeTrack) { 
+                activeTrack.volume = 0.3; // REDUCED MUSIC VOLUME (30%)
                 activeTrack.currentTime = 0; 
                 let playPromise = activeTrack.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio play blocked/not found"));
+                    playPromise.catch(error => console.log("Audio play blocked"));
                 }
             }
         }
 
         function playBreath(type, duration) {
-            const ctx = getAudio(); 
-            const noise = ctx.createBufferSource(); 
-            const bs = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); 
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.15;
-            noise.buffer = buffer; 
-            const filter = ctx.createBiquadFilter(); 
-            filter.type = "lowpass"; 
-            const gain = ctx.createGain();
+            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.3; // INCREASED NOISE DENSITY
+            noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
 
             if (type === 'in') {
-                filter.frequency.setValueAtTime(200, ctx.currentTime); 
-                filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3);
+                gain.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 0.3); // BOOSTED INHALE (85%)
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
-                filter.frequency.setValueAtTime(800, ctx.currentTime); 
-                filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2);
-                gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5);
+                gain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 1.2); // BOOSTED EXHALE (75%)
+                gain.gain.setValueAtTime(0.75, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
+        }
+
+        function renderHome() {
+            const catLayout = [
+                { name: "HRV / Recovery", ids: ["res_55"] }, { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
+                { name: "Sleep", ids: ["sleep"] }, { name: "Focus", ids: ["box"] }, { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
+                { name: "Breath Control", ids: ["gent_h"] }, { name: "Assessment", ids: ["bolt"] }
+            ];
+            document.getElementById('exercise-list').innerHTML = catLayout.map(cat => `
+                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
+                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>`).join('')}
+            `).join('');
         }
 
         function showDetail(id) {
@@ -280,12 +243,9 @@
 
         async function startSession() {
             getAudio().resume(); startAmbient();
-            if (navigator.wakeLock) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){}
-            }
+            if (navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
             document.getElementById('session-view').style.display = 'flex';
-            const orb = document.getElementById('orb'); 
-            orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
+            const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
             void orb.offsetWidth;
             startTime = Date.now();
             if (currentId !== 'bolt') overallInterval = setInterval(() => { const diff = Math.floor((Date.now() - startTime) / 1000); document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`; }, 1000);
@@ -351,23 +311,15 @@
         }
 
         function handleSpecialAction() {
-            const val = Math.floor((Date.now() - startTime) / 1000); 
-            const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
-            if(currentId === 'bolt') { 
-                boltHistory.unshift({ id: Date.now(), score: val, date: ds }); 
-                localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); 
-                stopSession(); showDetail('bolt'); 
-            }
+            const val = Math.floor((Date.now() - startTime) / 1000); const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
         }
 
         function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
         function closeViews() { document.getElementById('detail-view').style.display = 'none'; document.getElementById('home-view').style.display = 'flex'; }
         function showInstructions() { document.getElementById('modal-overlay').style.display = 'flex'; }
         function closeInstructions() { document.getElementById('modal-overlay').style.display = 'none'; }
-        
-        // Start app
-        document.addEventListener('DOMContentLoaded', renderHome);
-        renderHome(); // Failsafe double call
+        renderHome();
     </script>
 </body>
 </html>
