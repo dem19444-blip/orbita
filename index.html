@@ -52,9 +52,9 @@
 
     <!-- Local Media Files -->
     <audio id="track-1" loop><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
-    <audio id="track-2" loop><source src="The Enclosing Mist.mp3" type="audio/mpeg"></audio>
-    <audio id="track-3" loop><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
-    <audio id="track-4" loop><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop><source src="silence.mp3" type="audio/mpeg"></audio>
     <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
@@ -64,9 +64,9 @@
         <div class="ambient-nav">
             <select id="ambient-selector">
                 <option value="track-1">Track: Soft Ambient Drone</option>
-                <option value="track-2">Track: The Enclosing Mist</option>
-                <option value="track-3">Track: Relaxing Meditation</option>
-                <option value="track-4">Track: Tibetan Bowl</option>
+                <option value="track-2">Track: Relaxing Meditation</option>
+                <option value="track-3">Track: Tibetan Bowl</option>
+                <option value="track-4">Track: Silence (File)</option>
                 <option value="track-none">Track: No Audio (Silent)</option>
             </select>
         </div>
@@ -312,14 +312,4 @@
 
         function handleSpecialAction() {
             const val = Math.floor((Date.now() - startTime) / 1000); const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
-            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
-        }
-
-        function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
-        function closeViews() { document.getElementById('detail-view').style.display = 'none'; document.getElementById('home-view').style.display = 'flex'; }
-        function showInstructions() { document.getElementById('modal-overlay').style.display = 'flex'; }
-        function closeInstructions() { document.getElementById('modal-overlay').style.display = 'none'; }
-        renderHome();
-    </script>
-</body>
-</html>
+            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), s
