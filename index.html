@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Orbita</title>
-    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id='g' cx='30%' cy='30%' r='100%'><stop offset='0%' stop-color='%235dade2'/><stop offset='100%' stop-color='%232980b9'/></radialGradient></defs><rect width='100' height='100' rx='20' fill='%231e293b'/><circle cx='50' cy='50' r='30' fill='url(%23g)'/></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><radialGradient id='g' cx='30%' cy='30%' r='100%'><stop offset='0%' stop-color='%235dade2'/><stop offset='100%' stop-color='%232980b9'/></radialGradient></defs><rect width='100' height='100' rx='20' fill='%231e293b'/><circle cx='50' cy='50' r='30' fill='url(%23g)'/></svg>">
     
@@ -15,7 +14,7 @@
         .container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
         h1 { font-size: 2.2rem; margin: 10px 0 5px 0; color: var(--primary); text-align: center; font-weight: 300; letter-spacing: 2px; width: 100%; }
         .subtitle { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 5px; cursor: pointer; text-decoration: underline; display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; }
-        .svg-icon { width: 1.2em; height: 1.2em; vertical-align: middle; fill: currentColor; }
+        .svg-icon { width: 1.2em; height: 1.2em; fill: currentColor; }
         .svg-arrow { width: 0.8em; height: 0.8em; fill: var(--primary); }
         .ambient-nav { width: 100%; text-align: center; margin-bottom: 20px; }
         #ambient-selector { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 12px; font-size: 0.85rem; outline: none; -webkit-appearance: none; width: 85%; text-align: center; }
@@ -51,10 +50,13 @@
 </head>
 <body>
 
-    <!-- Open Source Audio Tracks (Wikimedia Commons/Internet Archive) -->
-    <audio id="ambient-1" loop><source src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Dark_Ambient_Soundscape.ogg" type="audio/ogg"></audio>
-    <audio id="ambient-2" loop><source src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Space_Ambient_Drone.ogg" type="audio/ogg"></audio>
-    <audio id="ambient-3" loop><source src="https://archive.org/download/ambient-drone-01/AmbientDrone01.mp3" type="audio/mpeg"></audio>
+    <!-- Reliable Public Domain Audio Links -->
+    <audio id="track-1" loop crossorigin="anonymous"><source src="https://ia800305.us.archive.org/28/items/AmbientDrone01/AmbientDrone01.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop crossorigin="anonymous"><source src="https://ia801004.us.archive.org/32/items/AtmosphericAmbientDrone/Atmospheric%20Ambient%20Drone.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop crossorigin="anonymous"><source src="https://ia902206.us.archive.org/24/items/ambient-drone-05-2022/Ambient%20Drone%2005-2022.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop crossorigin="anonymous"><source src="https://ia800501.us.archive.org/2/items/relaxing-meditation-ambient-music/Relaxing%20Meditation%20Ambient%20Music.mp3" type="audio/mpeg"></audio>
+    <audio id="track-5" loop crossorigin="anonymous"><source src="https://ia800203.us.archive.org/1/items/tibetan-singing-bowl-meditation/tibetan-singing-bowl-meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
         <h1>ORBITA</h1>
@@ -62,11 +64,12 @@
         
         <div class="ambient-nav">
             <select id="ambient-selector">
-                <option value="internal-hum">Track: Cosmic Hum (Built-in)</option>
-                <option value="ambient-1">Track: Stellar Void</option>
-                <option value="ambient-2">Track: Nebula Surge</option>
-                <option value="ambient-3">Track: Deep Space Echo</option>
-                <option value="none">Track: No Audio (Silent)</option>
+                <option value="track-1">Track: Deep Space Hum</option>
+                <option value="track-2">Track: Stellar Wind</option>
+                <option value="track-3">Track: Cosmic Pulse</option>
+                <option value="track-4">Track: Zen Void</option>
+                <option value="track-5">Track: Tibetan Bowl Style</option>
+                <option value="track-none">Track: No Audio (Silent)</option>
             </select>
         </div>
         <div id="exercise-list"></div>
@@ -82,7 +85,7 @@
             <div class="quick-stats" id="det-stats"></div>
             <div id="exercise-description" class="rationale-text"></div>
             <div id="safety-container" style="background: rgba(231, 76, 60, 0.1); border-left: 4px solid var(--danger); padding: 15px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px; width: 100%; box-sizing: border-box;">
-                <strong style="color:var(--danger)">SAFETY:</strong> <span id="det-safety"></span>
+                <strong>SAFETY:</strong> <span id="det-safety"></span>
             </div>
             <div id="history-container" class="hidden" style="width: 100%;">
                 <h3 style="margin-top:10px; color:var(--primary); font-weight:bold; font-size:0.9rem;">HISTORY</h3>
@@ -125,14 +128,13 @@
         </div>
     </div>
 
-    <!-- GUIDE MODAL -->
     <div id="modal-overlay" onclick="closeInstructions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
             <div style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
-                <p><strong>Science:</strong> Build CO₂ tolerance to unlock the Bohr Effect (efficient oxygen delivery).</p>
-                <p><strong>Ambient Sound:</strong> Choose your track in the menu. These play as "media," bypassing the side silent switch on iPhone. Ensure media volume is up.</p>
-                <p><strong>BOLT:</strong> Nasal breath in, nasal breath out, then hold. Auto-times from expiration. Stop at the first definite urge.</p>
+                <p><strong>Bohr Effect:</strong> To release oxygen effectively, you must tolerate higher CO₂ levels. This app trains that tolerance.</p>
+                <p><strong>Audio:</strong> Tracks bypass the silent switch. Ensure <strong>Media Volume</strong> is up. If you hear nothing, check your connection to the track sources.</p>
+                <p><strong>Resonance:</strong> Logic specifically shows 5.5 for high-precision coherence breathing.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
         </div>
@@ -141,43 +143,29 @@
     <script>
         const DEFAULTS = {
             res_55: { name: "Resonance 5.5", cat: "HRV / Recovery", icon: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.48 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.52 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The Gold Standard for HRV coherence training.", safety: "Keep breath light." },
-            ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve to down-regulate.", safety: "Don't force the exhale." },
-            box: { name: "Box Breathing", cat: "Focus", icon: "M12 2l-5.5 9h11L12 2zm0 20l5.5-9h-11L12 22z", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "Tactical calm used by Navy SEALs.", safety: "Relax into pauses." },
-            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 2, inhale2: 1, exhale: 6, notes: "Huberman method for immediate cardiac reset.", safety: "Limit to 2 minutes." },
-            sleep: { name: "Sleep 4:6", cat: "Sleep", icon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.12-1.36-.98 1.37-2.58 2.26-4.38 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.8.89-3.4 2.26-4.38C12.92 3.04 12.46 3 12 3z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Whisper-quiet rhythm for deep rest.", safety: "Prepare while lying down." },
-            red_br: { name: "Reduced Breathing", cat: "CO₂ Tolerance", icon: "M12 2c-4.41 0-8 3.59-8 8v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.41-3.59-8-8-8zm0 2c3.31 0 6 2.69 6 6v1h-2V7c0-2.21-1.79-4-4-4S6 4.79 6 7v3H4v-1c0-3.31 2.69-6 6-6z", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Buteyko training for CO2 sensitivity.", safety: "Air hunger should be mild." },
+            ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve to down-regulate.", safety: "Don't force exhale." },
+            box: { name: "Box Breathing", cat: "Focus", icon: "M12 2l-5.5 9h11L12 2zm0 20l5.5-9h-11L12 22z", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "Navy SEAL technique for 'Tactical Calm'.", safety: "Relax into pauses." },
+            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 2, inhale2: 1, exhale: 6, notes: "Fastest way to dump CO2 and lower heart rate.", safety: "Limit to 2 minutes." },
+            sleep: { name: "Sleep 4:6", cat: "Sleep", icon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.12-1.36-.98 1.37-2.58 2.26-4.38 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.8.89-3.4 2.26-4.38C12.92 3.04 12.46 3 12 3z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Whisper-quiet rhythm for deep rest.", safety: "Lying down recommended." },
+            red_br: { name: "Reduced Breathing", cat: "CO₂ Tolerance", icon: "M12 2c-4.41 0-8 3.59-8 8v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.41-3.59-8-8-8zm0 2c3.31 0 6 2.69 6 6v1h-2V7c0-2.21-1.79-4-4-4S6 4.79 6 7v3H4v-1c0-3.31 2.69-6 6-6z", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Buteyko training for CO2 sensitivity.", safety: "Mild air hunger only." },
             gent_h: { name: "Gentle Exhale Hold", cat: "Breath Control", icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "Oxygen Advantage 'mini pauses'.", safety: "Effortless holds." },
             rel_478: { name: "4:7:8 Relaxation", cat: "Relaxation", icon: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z", inhale: 4, holdIn: 7, exhale: 8, holdEx: 0, notes: "Andrew Weil's 'Natural Tranquilizer'.", safety: "Stop if dizzy." },
             hum: { name: "Humming Breath", cat: "Relaxation", icon: "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z", inhale: 4, exhale: 8, notes: "Increase Nitric Oxide production up to 15x.", safety: "Keep hum soft." },
             bolt: { name: "BOLT Score", cat: "Assessment", icon: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z", inhale: 3, exhale: 3, notes: "Foundation of functional CO2 tolerance testing.", safety: "Sit quietly for 10 mins." }
         };
 
-        const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften into pause"] };
+        const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
 
-        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v23')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v23')) || [], lastNewResult = null;
-        let audioCtx = null, activeTrack = null, droneNode = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
+        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [], lastNewResult = null;
+        let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
         function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
         
         function startAmbient() {
-            const ctx = getAudio();
             const val = document.getElementById('ambient-selector').value;
-            if (val === 'internal-hum') {
-                if (droneNode) return;
-                const osc = ctx.createOscillator(); const g = ctx.createGain();
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(55, ctx.currentTime);
-                g.gain.setValueAtTime(0, ctx.currentTime); g.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 3);
-                osc.connect(g); g.connect(ctx.destination); osc.start();
-                droneNode = { osc, g };
-            } else if (val !== 'none') {
-                activeTrack = document.getElementById(val);
-                if (activeTrack) { activeTrack.currentTime = 0; activeTrack.volume = 0.5; activeTrack.play().catch(()=>{}); }
-            }
-        }
-
-        function stopAmbient() {
-            if (droneNode) { droneNode.g.gain.linearRampToValueAtTime(0, getAudio().currentTime + 1); setTimeout(() => { droneNode.osc.stop(); droneNode = null; }, 1100); }
-            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
+            if (val === 'track-none') return;
+            activeTrack = document.getElementById(val);
+            if (activeTrack) { activeTrack.currentTime = 0; activeTrack.play().catch(()=>{}); }
         }
 
         function playBreath(type, duration) {
@@ -188,16 +176,14 @@
 
             if (type === 'in') {
                 filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3); // Attack
+                gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
-                // FIXED EXHALE DURATION ENGINE
                 filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.0); // Slow Ease-in
-                gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5); // Sustain
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration); // Ease-out
+                gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2); // SMOOTH 1.2s onset
+                gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
         }
@@ -233,9 +219,7 @@
             window.scrollTo(0,0);
         }
 
-        function renderHistory() {
-            document.getElementById('history-list').innerHTML = boltHistory.map(h => `<div class="history-item"><span>${h.date}</span><span>${h.score}s</span></div>`).join('');
-        }
+        function renderHistory() { document.getElementById('history-list').innerHTML = boltHistory.map(h => `<div class="history-item"><span>${h.date}</span><span>${h.score}s</span></div>`).join(''); }
 
         function showTailor() {
             const ex = DEFAULTS[currentId], data = tailorData[currentId] || ex; let html = '';
@@ -246,10 +230,10 @@
         function saveTailor() {
             if (!tailorData[currentId]) tailorData[currentId] = { ...DEFAULTS[currentId] };
             ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { const el = document.getElementById(`tailor-${f}`); if (el) tailorData[currentId][f] = parseFloat(el.value); });
-            localStorage.setItem('Orbita_tailor_v23', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
+            localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
         }
 
-        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v23', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
+        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
 
         async function startSession() {
             getAudio().resume(); startAmbient();
@@ -264,7 +248,7 @@
 
         function stopSession() {
             clearTimeout(sessionTimeout); clearInterval(phaseInterval); clearInterval(overallInterval);
-            stopAmbient();
+            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
             if (wakeLock) wakeLock.release().then(() => wakeLock = null);
             document.getElementById('session-view').style.display = 'none';
             document.getElementById('special-controls').classList.add('hidden');
@@ -322,7 +306,7 @@
 
         function handleSpecialAction() {
             const val = Math.floor((Date.now() - startTime) / 1000); const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
-            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v23', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
+            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
         }
 
         function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
