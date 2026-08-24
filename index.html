@@ -164,7 +164,7 @@
             if (val === 'track-none') return;
             activeTrack = document.getElementById(val);
             if (activeTrack) { 
-                activeTrack.volume = 0.3; // REDUCED MUSIC VOLUME (30%)
+                activeTrack.volume = 0.1; // REDUCED MUSIC VOLUME (10%)
                 activeTrack.currentTime = 0; 
                 let playPromise = activeTrack.play();
                 if (playPromise !== undefined) {
@@ -176,18 +176,18 @@
         function playBreath(type, duration) {
             const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
             const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
-            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.3; // INCREASED NOISE DENSITY
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.3; // REINFORCED BREATH NOISE
             noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
 
             if (type === 'in') {
                 filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 0.3); // BOOSTED INHALE (85%)
+                gain.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 0.3); // INHALE VOLUME (85%)
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
                 filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 1.2); // BOOSTED EXHALE (75%)
+                gain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 1.2); // EXHALE VOLUME (75%)
                 gain.gain.setValueAtTime(0.75, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
