@@ -51,10 +51,10 @@
 <body>
 
     <!-- Local Media Files -->
-    <audio id="track-1" loop preload="auto"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
-    <audio id="track-2" loop preload="auto"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
-    <audio id="track-3" loop preload="auto"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
-    <audio id="track-4" loop preload="auto"><source src="silence.mp3" type="audio/mpeg"></audio>
+    <audio id="track-1" loop crossorigin="anonymous"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop crossorigin="anonymous"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop crossorigin="anonymous"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop crossorigin="anonymous"><source src="silence.mp3" type="audio/mpeg"></audio>
     <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
@@ -154,41 +154,67 @@
 
         const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
 
-        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [], lastNewResult = null;
+        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
         let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
+        
+        // NEW WEB AUDIO NODES FOR IPHONE VOLUME BYPASS
+        let musicGainNode = null;
+        let musicSourceNodes = {}; 
 
-        function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+        function getAudio() { 
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+                musicGainNode = audioCtx.createGain();
+                musicGainNode.connect(audioCtx.destination);
+            }
+            return audioCtx; 
+        }
         
         function startAmbient() {
             const val = document.getElementById('ambient-selector').value;
             if (val === 'track-none') return;
+            
+            const ctx = getAudio();
             activeTrack = document.getElementById(val);
-            if (activeTrack) { 
-                activeTrack.volume = 0.1; // REDUCED MUSIC VOLUME (10%)
-                activeTrack.currentTime = 0; 
-                let playPromise = activeTrack.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio play blocked"));
+            
+            if (activeTrack) {
+                // Route through GainNode to force 5% volume on iPhone
+                if (!musicSourceNodes[val]) {
+                    musicSourceNodes[val] = ctx.createMediaElementSource(activeTrack);
+                    musicSourceNodes[val].connect(musicGainNode);
                 }
+                
+                musicGainNode.gain.setTargetAtTime(0.05, ctx.currentTime, 0.1); // TRUE 5% VOLUME
+                activeTrack.currentTime = 0; 
+                activeTrack.play().catch(e => console.log("Play blocked"));
             }
         }
 
         function playBreath(type, duration) {
-            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
-            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.3; // REINFORCED BREATH NOISE
-            noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
+            const ctx = getAudio(); 
+            const noise = ctx.createBufferSource(); 
+            const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); 
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.4; 
+            
+            noise.buffer = buffer; 
+            const filter = ctx.createBiquadFilter(); 
+            filter.type = "lowpass"; 
+            const gain = ctx.createGain();
 
             if (type === 'in') {
-                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(200, ctx.currentTime); 
+                filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.85, ctx.currentTime + 0.3); // INHALE VOLUME (85%)
+                gain.gain.linearRampToValueAtTime(0.9, ctx.currentTime + 0.3); // CRISP BREATHING
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
-                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(800, ctx.currentTime); 
+                filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 1.2); // EXHALE VOLUME (75%)
-                gain.gain.setValueAtTime(0.75, ctx.currentTime + duration - 0.5);
+                gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 1.2);
+                gain.gain.setValueAtTime(0.8, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
