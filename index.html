@@ -9,7 +9,7 @@
     
     <style>
         :root { --primary: #3498db; --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --muted: #94a3b8; --accent: #2ecc71; --danger: #e74c3c; --hold: #6c5ce7; }
-        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; }
+        html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { display: flex; flex-direction: column; align-items: center; overflow-x: hidden; overflow-y: auto; }
         .container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
         h1 { font-size: 2.2rem; margin: 10px 0 5px 0; color: var(--primary); text-align: center; font-weight: 300; letter-spacing: 2px; width: 100%; }
@@ -17,8 +17,8 @@
         .svg-icon { width: 1.2em; height: 1.2em; fill: currentColor; }
         .svg-arrow { width: 0.8em; height: 0.8em; fill: var(--primary); }
         .ambient-nav { width: 100%; text-align: center; margin-bottom: 20px; }
-        #ambient-selector { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 10px 15px; border-radius: 12px; font-size: 0.85rem; outline: none; -webkit-appearance: none; width: 85%; text-align: center; }
-        #exercise-list { width: 100%; }
+        #ambient-selector { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 12px; border-radius: 12px; font-size: 0.9rem; outline: none; -webkit-appearance: none; width: 90%; text-align: center; }
+        #exercise-list { width: 100%; min-height: 200px; }
         .category-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--primary); margin: 30px 0 10px 5px; letter-spacing: 1.5px; width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
         .ex-button { background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; }
         .ex-name { font-weight: bold; font-size: 1.15rem; margin-bottom: 8px; display: block; }
@@ -51,10 +51,10 @@
 <body>
 
     <!-- Local Media Files -->
-    <audio id="track-1" loop><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
-    <audio id="track-2" loop><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
-    <audio id="track-3" loop><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
-    <audio id="track-4" loop><source src="silence.mp3" type="audio/mpeg"></audio>
+    <audio id="track-1" loop preload="auto"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop preload="auto"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop preload="auto"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop preload="auto"><source src="silence.mp3" type="audio/mpeg"></audio>
     <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
@@ -70,7 +70,9 @@
                 <option value="track-none">Track: No Audio (Silent)</option>
             </select>
         </div>
-        <div id="exercise-list"></div>
+        <div id="exercise-list">
+            <!-- Exercises will be injected here -->
+        </div>
     </div>
 
     <!-- DETAIL VIEW -->
@@ -126,6 +128,7 @@
         </div>
     </div>
 
+    <!-- MODAL GUIDE -->
     <div id="modal-overlay" onclick="closeInstructions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
@@ -154,10 +157,49 @@
 
         const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
 
-        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [], lastNewResult = null;
-        let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
+        let currentId = null, tailorData = {}, boltHistory = [], audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
-        function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+        // Initialize with error handling
+        try {
+            tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {};
+            boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
+        } catch(e) {
+            console.error("Storage error, resetting...");
+            tailorData = {}; boltHistory = [];
+        }
+
+        function renderHome() {
+            const listEl = document.getElementById('exercise-list');
+            if (!listEl) return;
+            
+            const catLayout = [
+                { name: "HRV / Recovery", ids: ["res_55"] }, 
+                { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
+                { name: "Sleep", ids: ["sleep"] }, 
+                { name: "Focus", ids: ["box"] }, 
+                { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
+                { name: "Breath Control", ids: ["gent_h"] }, 
+                { name: "Assessment", ids: ["bolt"] }
+            ];
+
+            listEl.innerHTML = catLayout.map(cat => `
+                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
+                ${cat.ids.map(id => `
+                    <div class="ex-button" onclick="showDetail('${id}')">
+                        <div>
+                            <span class="ex-name">${DEFAULTS[id].name}</span>
+                            <span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span>
+                        </div>
+                        <svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                    </div>
+                `).join('')}
+            `).join('');
+        }
+
+        function getAudio() { 
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+            return audioCtx; 
+        }
         
         function startAmbient() {
             const val = document.getElementById('ambient-selector').value;
@@ -167,43 +209,38 @@
                 activeTrack.currentTime = 0; 
                 let playPromise = activeTrack.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log("Audio file not found: " + val);
-                    });
+                    playPromise.catch(error => console.log("Audio play blocked/not found"));
                 }
             }
         }
 
         function playBreath(type, duration) {
-            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
+            const ctx = getAudio(); 
+            const noise = ctx.createBufferSource(); 
+            const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); 
+            const data = buffer.getChannelData(0);
             for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.15;
-            noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
+            noise.buffer = buffer; 
+            const filter = ctx.createBiquadFilter(); 
+            filter.type = "lowpass"; 
+            const gain = ctx.createGain();
 
             if (type === 'in') {
-                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3);
+                filter.frequency.setValueAtTime(200, ctx.currentTime); 
+                filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
+                gain.gain.setValueAtTime(0, ctx.currentTime); 
+                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
-                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
+                filter.frequency.setValueAtTime(800, ctx.currentTime); 
+                filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
                 gain.gain.setValueAtTime(0, ctx.currentTime); 
                 gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2);
                 gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
-        }
-
-        function renderHome() {
-            const catLayout = [
-                { name: "HRV / Recovery", ids: ["res_55"] }, { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
-                { name: "Sleep", ids: ["sleep"] }, { name: "Focus", ids: ["box"] }, { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
-                { name: "Breath Control", ids: ["gent_h"] }, { name: "Assessment", ids: ["bolt"] }
-            ];
-            document.getElementById('exercise-list').innerHTML = catLayout.map(cat => `
-                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
-                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>`).join('')}
-            `).join('');
         }
 
         function showDetail(id) {
@@ -243,9 +280,12 @@
 
         async function startSession() {
             getAudio().resume(); startAmbient();
-            if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+            if (navigator.wakeLock) {
+                try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){}
+            }
             document.getElementById('session-view').style.display = 'flex';
-            const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
+            const orb = document.getElementById('orb'); 
+            orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
             void orb.offsetWidth;
             startTime = Date.now();
             if (currentId !== 'bolt') overallInterval = setInterval(() => { const diff = Math.floor((Date.now() - startTime) / 1000); document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`; }, 1000);
@@ -255,7 +295,7 @@
         function stopSession() {
             clearTimeout(sessionTimeout); clearInterval(phaseInterval); clearInterval(overallInterval);
             if (activeTrack) { activeTrack.pause(); activeTrack = null; }
-            if (wakeLock) wakeLock.release().then(() => wakeLock = null);
+            if (wakeLock) { wakeLock.release(); wakeLock = null; }
             document.getElementById('session-view').style.display = 'none';
             document.getElementById('special-controls').classList.add('hidden');
             document.getElementById('session-stop-btn').classList.remove('hidden');
@@ -311,5 +351,23 @@
         }
 
         function handleSpecialAction() {
-            const val = Math.floor((Date.now() - startTime) / 1000); const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
-            if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), s
+            const val = Math.floor((Date.now() - startTime) / 1000); 
+            const ds = new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+            if(currentId === 'bolt') { 
+                boltHistory.unshift({ id: Date.now(), score: val, date: ds }); 
+                localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); 
+                stopSession(); showDetail('bolt'); 
+            }
+        }
+
+        function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
+        function closeViews() { document.getElementById('detail-view').style.display = 'none'; document.getElementById('home-view').style.display = 'flex'; }
+        function showInstructions() { document.getElementById('modal-overlay').style.display = 'flex'; }
+        function closeInstructions() { document.getElementById('modal-overlay').style.display = 'none'; }
+        
+        // Start app
+        document.addEventListener('DOMContentLoaded', renderHome);
+        renderHome(); // Failsafe double call
+    </script>
+</body>
+</html>
