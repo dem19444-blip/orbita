@@ -18,7 +18,7 @@
         .svg-arrow { width: 0.8em; height: 0.8em; fill: var(--primary); }
         .ambient-nav { width: 100%; text-align: center; margin-bottom: 20px; }
         #ambient-selector { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text); padding: 12px; border-radius: 12px; font-size: 0.9rem; outline: none; -webkit-appearance: none; width: 90%; text-align: center; }
-        #exercise-list { width: 100%; min-height: 300px; }
+        #exercise-list { width: 100%; min-height: 200px; }
         .category-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--primary); margin: 30px 0 10px 5px; letter-spacing: 1.5px; width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
         .ex-button { background: var(--card-bg); border-radius: 20px; padding: 22px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; }
         .ex-name { font-weight: bold; font-size: 1.15rem; margin-bottom: 8px; display: block; }
@@ -51,10 +51,10 @@
 <body>
 
     <!-- Local Media Files -->
-    <audio id="track-1" loop crossorigin="anonymous"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
-    <audio id="track-2" loop crossorigin="anonymous"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
-    <audio id="track-3" loop crossorigin="anonymous"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
-    <audio id="track-4" loop crossorigin="anonymous"><source src="silence.mp3" type="audio/mpeg"></audio>
+    <audio id="track-1" loop preload="auto"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
+    <audio id="track-2" loop preload="auto"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
+    <audio id="track-3" loop preload="auto"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
+    <audio id="track-4" loop preload="auto"><source src="silence.mp3" type="audio/mpeg"></audio>
     <audio id="track-none" loop><source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav"></audio>
 
     <div class="container" id="home-view">
@@ -73,7 +73,7 @@
         <div id="exercise-list"></div>
     </div>
 
-    <!-- Views and Detail Modals (omitted for brevity but kept in your file) -->
+    <!-- DETAIL VIEW -->
     <div id="detail-view" class="overlay-view">
         <div class="container">
             <div onclick="closeViews()" style="color:var(--primary); font-weight:bold; margin-bottom:20px; cursor:pointer; align-self: flex-start; display:flex; align-items:center; gap:5px;">
@@ -131,14 +131,13 @@
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
             <div style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
                 <p><strong>Bohr Effect:</strong> To release oxygen effectively, you must tolerate higher CO₂ levels.</p>
-                <p><strong>Audio:</strong> Logic forces music to 5% background levels to ensure you can hear the breathing cues.</p>
+                <p><strong>Audio:</strong> Tracks play from your folder. Volume is user-controlled on iPhone.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
         </div>
     </div>
 
     <script>
-        // 1. DATA FIRST
         const DEFAULTS = {
             res_55: { name: "Resonance 5.5", cat: "HRV / Recovery", icon: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.48 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.52 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The Gold Standard for HRV coherence training.", safety: "Keep breath light." },
             ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve to down-regulate.", safety: "Don't force exhale." },
@@ -154,98 +153,52 @@
 
         const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
 
-        // 2. STATE 
-        let currentId = null, tailorData = {}, boltHistory = [];
-        let audioCtx = null, musicGainNode = null, musicSourceNodes = {};
-        let activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
+        let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
+        let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
-        // 3. UI RENDERING (Self-contained)
-        function renderHome() {
-            const container = document.getElementById('exercise-list');
-            if(!container) return;
-            const layout = [
-                { name: "HRV / Recovery", ids: ["res_55"] }, { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
-                { name: "Sleep", ids: ["sleep"] }, { name: "Focus", ids: ["box"] }, { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
-                { name: "Breath Control", ids: ["gent_h"] }, { name: "Assessment", ids: ["bolt"] }
-            ];
-            container.innerHTML = layout.map(cat => `
-                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
-                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>`).join('')}
-            `).join('');
-        }
-
-        // 4. AUDIO LOGIC (Triggered only on interaction)
-        function setupAudioSystem() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                musicGainNode = audioCtx.createGain();
-                musicGainNode.connect(audioCtx.destination);
-            }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
+        function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+        
         function startAmbient() {
             const val = document.getElementById('ambient-selector').value;
             if (val === 'track-none') return;
             activeTrack = document.getElementById(val);
-            if (activeTrack) {
-                if (!musicSourceNodes[val]) {
-                    musicSourceNodes[val] = audioCtx.createMediaElementSource(activeTrack);
-                    musicSourceNodes[val].connect(musicGainNode);
-                }
-                musicGainNode.gain.setTargetAtTime(0.05, audioCtx.currentTime, 0.1); // Force 5% volume
+            if (activeTrack) { 
                 activeTrack.currentTime = 0; 
-                activeTrack.play().catch(e => console.log("Play failed"));
+                activeTrack.play().catch(e => console.log("Play blocked"));
             }
         }
 
         function playBreath(type, duration) {
-            const ctx = audioCtx;
-            const noise = ctx.createBufferSource(); 
-            const bs = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); 
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.15;
-            
-            noise.buffer = buffer; 
-            const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; 
-            const gain = ctx.createGain();
+            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.15; // SOFT NOISE
+            noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
 
             if (type === 'in') {
                 filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0, ctx.currentTime); 
+                gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.3); // QUIETER INHALE (0.2)
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             } else {
                 filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime); gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1.2);
-                gain.gain.setValueAtTime(0.3, ctx.currentTime + duration - 0.5);
+                gain.gain.setValueAtTime(0, ctx.currentTime); 
+                gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 1.2); // QUIETER EXHALE (0.15)
+                gain.gain.setValueAtTime(0.15, ctx.currentTime + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
             }
             noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
         }
 
-        // 5. SESSION & VIEWS
-        async function startSession() {
-            setupAudioSystem(); 
-            startAmbient();
-            if (navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
-            
-            document.getElementById('session-view').style.display = 'flex';
-            const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
-            void orb.offsetWidth;
-            startTime = Date.now();
-            if (currentId !== 'bolt') overallInterval = setInterval(() => { const diff = Math.floor((Date.now() - startTime) / 1000); document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`; }, 1000);
-            if (currentId === 'bolt') runBoltSequence(); else if (currentId === 'sigh') runSighSequence(); else runLoopSequence();
-        }
-
-        function stopSession() {
-            clearTimeout(sessionTimeout); clearInterval(phaseInterval); clearInterval(overallInterval);
-            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
-            if (wakeLock) { try { wakeLock.release(); wakeLock = null; } catch(e){} }
-            document.getElementById('session-view').style.display = 'none';
-            document.getElementById('special-controls').classList.add('hidden');
-            document.getElementById('session-stop-btn').classList.remove('hidden');
-            document.getElementById('orb').className = 'orb'; document.getElementById('orb-timer').innerText = "";
+        function renderHome() {
+            const catLayout = [
+                { name: "HRV / Recovery", ids: ["res_55"] }, { name: "Relaxation / Stress", ids: ["ext_exh", "sigh", "rel_478", "hum"] }, 
+                { name: "Sleep", ids: ["sleep"] }, { name: "Focus", ids: ["box"] }, { name: "Nasal / CO₂ Tolerance", ids: ["red_br"] }, 
+                { name: "Breath Control", ids: ["gent_h"] }, { name: "Assessment", ids: ["bolt"] }
+            ];
+            document.getElementById('exercise-list').innerHTML = catLayout.map(cat => `
+                <div class="category-title"><svg class="svg-icon" viewBox="0 0 24 24"><path d="${DEFAULTS[cat.ids[0]].icon}"/></svg>${cat.name}</div>
+                ${cat.ids.map(id => `<div class="ex-button" onclick="showDetail('${id}')"><div><span class="ex-name">${DEFAULTS[id].name}</span><span style="font-size:0.85rem; color:var(--muted);">${DEFAULTS[id].cat}</span></div><svg class="svg-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>`).join('')}
+            `).join('');
         }
 
         function showDetail(id) {
@@ -264,6 +217,44 @@
             document.getElementById('tailor-trigger').classList.toggle('hidden', id === 'bolt' || id === 'sigh');
             if (id === 'bolt') renderHistory();
             document.getElementById('detail-view').style.display = 'flex';
+            window.scrollTo(0,0);
+        }
+
+        function renderHistory() { document.getElementById('history-list').innerHTML = boltHistory.map(h => `<div class="history-item"><span>${h.date}</span><span>${h.score}s</span></div>`).join(''); }
+
+        function showTailor() {
+            const ex = DEFAULTS[currentId], data = tailorData[currentId] || ex; let html = '';
+            ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { if (ex[f] !== undefined) html += `<div class="setup-row"><label>${f.replace('hold', 'Hold ').toUpperCase()}</label><input type="number" step="0.1" id="tailor-${f}" value="${data[f]}"></div>`; });
+            document.getElementById('tailor-inputs').innerHTML = html; document.getElementById('tailor-view').style.display = 'flex';
+        }
+
+        function saveTailor() {
+            if (!tailorData[currentId]) tailorData[currentId] = { ...DEFAULTS[currentId] };
+            ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { const el = document.getElementById(`tailor-${f}`); if (el) tailorData[currentId][f] = parseFloat(el.value); });
+            localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
+        }
+
+        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
+
+        async function startSession() {
+            getAudio().resume(); startAmbient();
+            if (navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
+            document.getElementById('session-view').style.display = 'flex';
+            const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
+            void orb.offsetWidth;
+            startTime = Date.now();
+            if (currentId !== 'bolt') overallInterval = setInterval(() => { const diff = Math.floor((Date.now() - startTime) / 1000); document.getElementById('overall-timer').innerText = `${Math.floor(diff/60).toString().padStart(2,'0')}:${(diff%60).toString().padStart(2,'0')}`; }, 1000);
+            if (currentId === 'bolt') runBoltSequence(); else if (currentId === 'sigh') runSighSequence(); else runLoopSequence();
+        }
+
+        function stopSession() {
+            clearTimeout(sessionTimeout); clearInterval(phaseInterval); clearInterval(overallInterval);
+            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
+            if (wakeLock) { try { wakeLock.release(); wakeLock = null; } catch(e){} }
+            document.getElementById('session-view').style.display = 'none';
+            document.getElementById('special-controls').classList.add('hidden');
+            document.getElementById('session-stop-btn').classList.remove('hidden');
+            document.getElementById('orb').className = 'orb'; document.getElementById('orb-timer').innerText = "";
         }
 
         function animate(step) {
@@ -319,31 +310,11 @@
             if(currentId === 'bolt') { boltHistory.unshift({ id: Date.now(), score: val, date: ds }); localStorage.setItem('Orbita_bolt_v24', JSON.stringify(boltHistory)); stopSession(); showDetail('bolt'); }
         }
 
-        function renderHistory() { document.getElementById('history-list').innerHTML = boltHistory.map(h => `<div class="history-item"><span>${h.date}</span><span>${h.score}s</span></div>`).join(''); }
-        function showTailor() {
-            const ex = DEFAULTS[currentId], data = tailorData[currentId] || ex; let html = '';
-            ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { if (ex[f] !== undefined) html += `<div class="setup-row"><label>${f.replace('hold', 'Hold ').toUpperCase()}</label><input type="number" step="0.1" id="tailor-${f}" value="${data[f]}"></div>`; });
-            document.getElementById('tailor-inputs').innerHTML = html; document.getElementById('tailor-view').style.display = 'flex';
-        }
-        function saveTailor() {
-            if (!tailorData[currentId]) tailorData[currentId] = { ...DEFAULTS[currentId] };
-            ['inhale', 'holdIn', 'exhale', 'holdEx'].forEach(f => { const el = document.getElementById(`tailor-${f}`); if (el) tailorData[currentId][f] = parseFloat(el.value); });
-            localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId);
-        }
-        function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
         function hideTailor() { document.getElementById('tailor-view').style.display = 'none'; }
         function closeViews() { document.getElementById('detail-view').style.display = 'none'; document.getElementById('home-view').style.display = 'flex'; }
         function showInstructions() { document.getElementById('modal-overlay').style.display = 'flex'; }
         function closeInstructions() { document.getElementById('modal-overlay').style.display = 'none'; }
-
-        // 6. INITIALIZATION
-        window.addEventListener('load', () => {
-            try {
-                tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {};
-                boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
-            } catch(e) {}
-            renderHome();
-        });
+        renderHome();
     </script>
 </body>
 </html>
