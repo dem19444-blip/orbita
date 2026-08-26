@@ -182,7 +182,7 @@
             activeTrack = document.getElementById(val);
             if (activeTrack) { 
                 activeTrack.currentTime = 0; 
-                activeTrack.volume = 0.3;
+                activeTrack.volume = 0.1;
                 activeTrack.play().catch(e => console.log("Play blocked"));
             }
         }
@@ -288,7 +288,9 @@ function playBreath(type, duration) {
         function resetToDefault() { delete tailorData[currentId]; localStorage.setItem('Orbita_tailor_v24', JSON.stringify(tailorData)); hideTailor(); showDetail(currentId); }
 
         async function startSession() {
-            getAudio().resume(); startAmbient();
+            const ctx = getAudio();
+            await ctx.resume(); 
+            startAmbient();
             if (navigator.wakeLock) { try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e){} }
             document.getElementById('session-view').style.display = 'flex';
             const orb = document.getElementById('orb'); orb.className = 'orb'; orb.style.transition = 'none'; orb.style.width = '100px'; orb.style.height = '100px';
