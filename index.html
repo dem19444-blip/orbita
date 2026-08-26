@@ -61,7 +61,10 @@
         <h1>ORBITA</h1>
         <div class="subtitle" onclick="showInstructions()">Guide & Goals <svg class="svg-icon" style="color:var(--primary); margin-left:5px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
         
-        <div class="ambient-nav">
+<div class="ambient-nav">
+    <!-- Volume Slider Added Here -->
+    <div style="font-size: 0.7rem; color: var(--muted); margin-bottom: 5px;">AMBIENT VOLUME</div>
+    <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.05" style="width:90%; margin: 10px 0;" oninput="updateVolume(this.value)">
             <select id="ambient-selector">
                 <option value="track-1">Track: Soft Ambient Drone</option>
                 <option value="track-2">Track: Relaxing Meditation</option>
@@ -106,7 +109,7 @@
             <button class="btn btn-outline" onclick="resetToDefault()" style="border-color:var(--danger); color:var(--danger);">RESET TO DEFAULT</button>
         </div>
     </div>
-
+    
     <!-- SESSION VIEW -->
     <div id="session-view" class="overlay-view">
         <div class="session-header">
@@ -116,6 +119,7 @@
         <div class="orb-container">
             <div class="orb" id="orb"><div id="orb-timer"></div></div>
         </div>
+         <input type="range" id="session-vol-slider" min="0" max="1" step="0.01" value="0.05" style="width:80%; margin-bottom: 20px;" oninput="updateVolume(this.value)">
         <div id="overall-timer">00:00</div>
         <div style="width:100%; text-align:center; display: flex; flex-direction: column; align-items: center; gap: 10px;">
             <div id="special-controls" class="hidden" style="width:100%">
@@ -216,11 +220,17 @@ function startAmbient() {
 function updateVolume(val) {
     ambientVolume = parseFloat(val);
     const ctx = getAudio();
-    // If a session is active and music is playing, update it immediately
+    
+    // Update the actual volume
     if (ambientGain) {
-        // use setTargetAtTime for a smooth fade rather than a "pop"
         ambientGain.gain.setTargetAtTime(ambientVolume, ctx.currentTime, 0.05);
     }
+
+    // Sync both sliders so they show the same value
+    const s1 = document.getElementById('vol-slider');
+    const s2 = document.getElementById('session-vol-slider');
+    if (s1) s1.value = val;
+    if (s2) s2.value = val;
 }
 
         function playBreath(type, duration) {
