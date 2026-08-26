@@ -231,12 +231,12 @@ function startAmbient() {
             gain.gain.setValueAtTime(0, now);
             if (type === 'in') {
                 filter.frequency.setValueAtTime(200, now); filter.frequency.linearRampToValueAtTime(800, now + duration);
-                gain.gain.linearRampToValueAtTime(0.6, now + 0.5); 
+                gain.gain.linearRampToValueAtTime(0.5, now + 0.5); 
                 gain.gain.setValueAtTime(0.5, now + duration - 0.3);
                 gain.gain.linearRampToValueAtTime(0, now + duration);
             } else {
                 filter.frequency.setValueAtTime(700, now); filter.frequency.exponentialRampToValueAtTime(150, now + duration);
-                gain.gain.linearRampToValueAtTime(0.5, now + 1.0); 
+                gain.gain.linearRampToValueAtTime(0.35, now + 1.0); 
                 gain.gain.setValueAtTime(0.35, now + duration - 0.5);
                 gain.gain.linearRampToValueAtTime(0, now + duration);
             }
