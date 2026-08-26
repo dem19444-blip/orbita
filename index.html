@@ -133,7 +133,8 @@
             <p style="text-align:center; font-style: italic; color: var(--muted); margin-top: -15px; margin-bottom: 20px; font-size: 0.9rem;">Master Your Breath, Optimize Your Life</p>
             
             <div style="font-size: 0.9rem; line-height: 1.5; color: #cbd5e1;">
-                <p>Orbita bridges the gap between ancient wisdom and modern respiratory science. By training your breathing, you directly influence your nervous system, heart rate variability (HRV), and cellular oxygenation.</p>
+                <p>Orbita bridges the gap between an
+                    cient wisdom and modern respiratory science. By training your breathing, you directly influence your nervous system, heart rate variability (HRV), and cellular oxygenation.</p>
 
                 <p><strong>The Bohr Effect:</strong> Energy isn’t just taking more oxygen in—it’s getting it out of your blood and into your cells. This requires Carbon Dioxide (CO₂). Orbita trains your brain to tolerate CO₂, "unlocking" your blood's ability to release oxygen to your brain and muscles.</p>
 
@@ -185,26 +186,58 @@
             }
         }
 
-        function playBreath(type, duration) {
-            const ctx = getAudio(); const noise = ctx.createBufferSource(); const bs = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate); const data = buffer.getChannelData(0);
-            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.15; // SOFT NOISE
-            noise.buffer = buffer; const filter = ctx.createBiquadFilter(); filter.type = "lowpass"; const gain = ctx.createGain();
+function playBreath(type, duration) {
+    const ctx = getAudio();
+    // Ensure context is running (fixes browser "auto-pause" issues)
+    if (ctx.state === 'suspended') ctx.resume();
 
-            if (type === 'in') {
-                filter.frequency.setValueAtTime(200, ctx.currentTime); filter.frequency.linearRampToValueAtTime(900, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.3); // QUIETER INHALE (0.2)
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
-            } else {
-                filter.frequency.setValueAtTime(800, ctx.currentTime); filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + duration);
-                gain.gain.setValueAtTime(0, ctx.currentTime); 
-                gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 1.2); // QUIETER EXHALE (0.15)
-                gain.gain.setValueAtTime(0.15, ctx.currentTime + duration - 0.5);
-                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
-            }
-            noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination); noise.start();
-        }
+    const noise = ctx.createBufferSource();
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    // Generate white noise
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * 0.2; 
+    }
+
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    
+    const gain = ctx.createGain();
+    const now = ctx.currentTime;
+
+    // Standardize the volume envelope
+    gain.gain.setValueAtTime(0, now);
+
+    if (type === 'in') {
+        // Inhale: Filter goes Low -> High (Opening up)
+        filter.frequency.setValueAtTime(200, now);
+        filter.frequency.linearRampToValueAtTime(800, now + duration);
+        
+        // Volume: Fade in quickly, hold, then fade out at the very end
+        gain.gain.linearRampToValueAtTime(0.4, now + 0.5); // Increased to 0.4
+        gain.gain.setValueAtTime(0.4, now + duration - 0.5);
+        gain.gain.linearRampToValueAtTime(0, now + duration);
+    } else {
+        // Exhale: Filter goes High -> Low (Closing down)
+        filter.frequency.setValueAtTime(700, now);
+        filter.frequency.exponentialRampToValueAtTime(150, now + duration);
+        
+        // Volume: Gentle fade in, hold, then fade out
+        gain.gain.linearRampToValueAtTime(0.3, now + 1.0); // Increased to 0.3
+        gain.gain.setValueAtTime(0.3, now + duration - 0.5);
+        gain.gain.linearRampToValueAtTime(0, now + duration);
+    }
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    noise.start();
+    noise.stop(now + duration); // Explicitly stop the node
+}
 
         function renderHome() {
             const catLayout = [
