@@ -210,7 +210,7 @@ function startAmbient() {
         
         // ADJUST VOLUME HERE: 0.02 is 2% volume. 
         // 0.05 would be 5%, etc.
-        ambientGain.gain.setValueAtTime(0.02, ctx.currentTime); 
+        ambientGain.gain.setValueAtTime(0.1, ctx.currentTime); 
         
         activeTrack.play().catch(e => console.log("Play blocked"));
     }
