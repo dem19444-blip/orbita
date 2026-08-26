@@ -50,7 +50,7 @@
 </head>
 <body>
 
-    <!-- Local Media Files -->
+    <!-- Audio Elements -->
     <audio id="track-1" loop preload="auto"><source src="Soft Ambient Drone.mp3" type="audio/mpeg"></audio>
     <audio id="track-2" loop preload="auto"><source src="Relaxing Meditation.mp3" type="audio/mpeg"></audio>
     <audio id="track-3" loop preload="auto"><source src="Tibetan Bowl.mp3" type="audio/mpeg"></audio>
@@ -66,7 +66,8 @@
                 <option value="track-1">Track: Soft Ambient Drone</option>
                 <option value="track-2">Track: Relaxing Meditation</option>
                 <option value="track-3">Track: Tibetan Bowl</option>
-                <option value="track-4">Track: Silence</option>
+                <option value="track-4">Track: Silence (MP3)</option>
+                <option value="track-none">No Ambient Audio</option>
             </select>
         </div>
         <div id="exercise-list"></div>
@@ -125,15 +126,14 @@
         </div>
     </div>
 
-<!-- UPDATED INSTRUCTIONS MODAL -->
+    <!-- INSTRUCTIONS MODAL (RESORED LONG-FORM TEXT) -->
     <div id="modal-overlay" onclick="closeInstructions()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center; font-size: 1.4rem;">ORBITA</h2>
             <p style="text-align:center; font-style: italic; color: var(--muted); margin-top: -15px; margin-bottom: 20px; font-size: 0.9rem;">Master Your Breath, Optimize Your Life</p>
             
             <div style="font-size: 0.9rem; line-height: 1.5; color: #cbd5e1;">
-                <p>Orbita bridges the gap between an
-                    cient wisdom and modern respiratory science. By training your breathing, you directly influence your nervous system, heart rate variability (HRV), and cellular oxygenation.</p>
+                <p>Orbita bridges the gap between ancient wisdom and modern respiratory science. By training your breathing, you directly influence your nervous system, heart rate variability (HRV), and cellular oxygenation.</p>
 
                 <p><strong>The Bohr Effect:</strong> Energy isn’t just taking more oxygen in—it’s getting it out of your blood and into your cells. This requires Carbon Dioxide (CO₂). Orbita trains your brain to tolerate CO₂, "unlocking" your blood's ability to release oxygen to your brain and muscles.</p>
 
@@ -151,6 +151,11 @@
                 <p><strong>Practice Tips:</strong> Consistency is key—10–20 minutes daily is ideal. Practice should never be a struggle; if you gasp at the end of a round, you are pushing too hard. Never practice holds while driving or in water.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
+            
+            <!-- THE FORCE REFRESH BUTTON -->
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="location.reload(true)" style="background: none; border: none; color: var(--muted); font-size: 0.7rem; text-decoration: underline; cursor: pointer;">Force Update App</button>
+            </div>
         </div>
     </div>
 
@@ -159,7 +164,7 @@
             res_55: { name: "Resonance 5.5", cat: "HRV / Recovery", icon: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.48 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.52 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The 'Gold Standard' for HRV training. At 5.5 breaths per minute, your heart and brainwaves enter a state of 'Coherence.' Popular with pro athletes to maintain peak efficiency. It maximizes the reach of the parasympathetic nervous system.", safety: "Keep the breath light and quiet." },
             ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve. Longer exhales allow CO2 levels to rise slightly, triggering the Bohr Effect—releasing more oxygen into your cells. Use this to down-regulate after high-stress activities.", safety: "If 6s feels like a strain, tailor it to 5s." },
             box: { name: "Box Breathing", cat: "Focus", icon: "M12 2l-5.5 9h11L12 2zm0 20l5.5-9h-11L12 22z", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "The Navy SEAL technique for 'Tactical Calm.' Equal phases stabilize the nervous system and clear 'mental fog.' It is fundamental for building CO2 tolerance and emotional regulation before high-stakes events.", safety: "Ensure holds are relaxed pauses." },
-            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 2, inhale2: 1, exhale: 6, notes: "The fastest biological way to dump excess CO2. You will see a 'stutter' expansion in the orb: one inhale followed by a sharp second inhale to re-inflate alveoli. The subsequent long exhale resets heart rate instantly.", safety: "Limit to 2 minutes per session." },
+            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 1.5, inhale2: 0.8, exhale: 6, notes: "The fastest biological way to dump excess CO2. You will see a 'stutter' expansion in the orb: one inhale followed by a sharp second inhale to re-inflate alveoli. The subsequent long exhale resets heart rate instantly.", safety: "Limit to 2 minutes per session." },
             sleep: { name: "Sleep 4:6", cat: "Sleep", icon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.12-1.36-.98 1.37-2.58 2.26-4.38 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.8.89-3.4 2.26-4.38C12.92 3.04 12.46 3 12 3z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Whisper-quiet rhythm for deep rest. Gentle, sedating flow. Focus on the air being so light and quiet that even you cannot hear your own breathing as you drift off.", safety: "Practice while preparing for rest." },
             red_br: { name: "Reduced Breathing", cat: "CO₂ Tolerance", icon: "M12 2c-4.41 0-8 3.59-8 8v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.41-3.59-8-8-8zm0 2c3.31 0 6 2.69 6 6v1h-2V7c0-2.21-1.79-4-4-4S6 4.79 6 7v3H4v-1c0-3.31 2.69-6 6-6z", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Core Buteyko/Oxygen Advantage practice. Breathe 20-30% less than you 'want' to, creating a 'tolerable air hunger.' This trains the brain to be less reactive to CO2, improving oxygen delivery.", safety: "Air hunger should be mild." },
             gent_h: { name: "Gentle Exhale Hold", cat: "Breath Control", icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "Oxygen Advantage 'mini pauses' to prevent chronic over-breathing. They help reset the respiratory center and ensure oxygen reaches your cells efficiently via the Bohr Effect.", safety: "The hold should feel effortless." },
@@ -177,67 +182,43 @@
         
         function startAmbient() {
             const val = document.getElementById('ambient-selector').value;
+            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
             if (val === 'track-none') return;
             activeTrack = document.getElementById(val);
             if (activeTrack) { 
                 activeTrack.currentTime = 0; 
-                activeTrack.volume = 0.1;
+                activeTrack.volume = 0.05; 
                 activeTrack.play().catch(e => console.log("Play blocked"));
             }
         }
 
-function playBreath(type, duration) {
-    const ctx = getAudio();
-    // Ensure context is running (fixes browser "auto-pause" issues)
-    if (ctx.state === 'suspended') ctx.resume();
-
-    const noise = ctx.createBufferSource();
-    const bufferSize = ctx.sampleRate * duration;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    // Generate white noise
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * 0.2; 
-    }
-
-    noise.buffer = buffer;
-    const filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
-    
-    const gain = ctx.createGain();
-    const now = ctx.currentTime;
-
-    // Standardize the volume envelope
-    gain.gain.setValueAtTime(0, now);
-
-    if (type === 'in') {
-        // Inhale: Filter goes Low -> High (Opening up)
-        filter.frequency.setValueAtTime(200, now);
-        filter.frequency.linearRampToValueAtTime(800, now + duration);
-        
-        // Volume: Fade in quickly, hold, then fade out at the very end
-        gain.gain.linearRampToValueAtTime(0.4, now + 0.5); // Increased to 0.4
-        gain.gain.setValueAtTime(0.4, now + duration - 0.5);
-        gain.gain.linearRampToValueAtTime(0, now + duration);
-    } else {
-        // Exhale: Filter goes High -> Low (Closing down)
-        filter.frequency.setValueAtTime(700, now);
-        filter.frequency.exponentialRampToValueAtTime(150, now + duration);
-        
-        // Volume: Gentle fade in, hold, then fade out
-        gain.gain.linearRampToValueAtTime(0.3, now + 1.0); // Increased to 0.3
-        gain.gain.setValueAtTime(0.3, now + duration - 0.5);
-        gain.gain.linearRampToValueAtTime(0, now + duration);
-    }
-
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    
-    noise.start();
-    noise.stop(now + duration); // Explicitly stop the node
-}
+        function playBreath(type, duration) {
+            const ctx = getAudio();
+            if (ctx.state === 'suspended') ctx.resume();
+            const noise = ctx.createBufferSource();
+            const bs = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bs, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bs; i++) data[i] = (Math.random() * 2 - 1) * 0.8; 
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter(); filter.type = "lowpass";
+            const gain = ctx.createGain();
+            const now = ctx.currentTime;
+            gain.gain.setValueAtTime(0, now);
+            if (type === 'in') {
+                filter.frequency.setValueAtTime(200, now); filter.frequency.linearRampToValueAtTime(800, now + duration);
+                gain.gain.linearRampToValueAtTime(0.5, now + 0.5); 
+                gain.gain.setValueAtTime(0.5, now + duration - 0.3);
+                gain.gain.linearRampToValueAtTime(0, now + duration);
+            } else {
+                filter.frequency.setValueAtTime(700, now); filter.frequency.exponentialRampToValueAtTime(150, now + duration);
+                gain.gain.linearRampToValueAtTime(0.35, now + 1.0); 
+                gain.gain.setValueAtTime(0.35, now + duration - 0.5);
+                gain.gain.linearRampToValueAtTime(0, now + duration);
+            }
+            noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            noise.start(); noise.stop(now + duration);
+        }
 
         function renderHome() {
             const catLayout = [
@@ -340,7 +321,7 @@ function playBreath(type, duration) {
         }
 
         function runSighSequence() {
-            const seq = [ { n: 'Inhale', t: 1.5, s: 1.8, sd: 'in' }, { n: 'Dip', t: 0.2, s: 1.6 }, { n: 'Inhale', t: 0.8, s: 2.3, sd: 'in' }, { n: 'Exhale', t: 6, s: 1, sd: 'out' } ];
+            const seq = [ { n: 'Inhale', t: DEFAULTS.sigh.inhale, s: 1.8, sd: 'in' }, { n: 'Dip', t: 0.2, s: 1.6 }, { n: 'Inhale', t: DEFAULTS.sigh.inhale2, s: 2.3, sd: 'in' }, { n: 'Exhale', t: DEFAULTS.sigh.exhale, s: 1, sd: 'out' } ];
             let i = 0; const play = () => { animate(seq[i]); sessionTimeout = setTimeout(() => { i = (i + 1) % seq.length; play(); }, seq[i].t * 1000); };
             play();
         }
