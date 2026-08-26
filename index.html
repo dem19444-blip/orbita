@@ -59,7 +59,7 @@
 
     <div class="container" id="home-view">
         <h1>ORBITA</h1>
-        <div class="subtitle" onclick="showInstructions()">Guide & Rationale <svg class="svg-icon" style="color:var(--primary); margin-left:5px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+        <div class="subtitle" onclick="showInstructions()">Guide & Goals <svg class="svg-icon" style="color:var(--primary); margin-left:5px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
         
         <div class="ambient-nav">
             <select id="ambient-selector">
@@ -130,8 +130,22 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color:var(--primary); margin-top:0; font-weight:bold; text-align:center;">ORBITA GUIDE</h2>
             <div style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
-                <p><strong>Bohr Effect:</strong> To release oxygen effectively, you must tolerate higher CO₂ levels.</p>
-                <p><strong>Audio:</strong> Tracks play from your folder. Volume is user-controlled on iPhone.</p>
+                <p><strong>The Bohr Effect:</strong> foundation of Oxygen Advantage. For oxygen to release into muscles and brain, you need Carbon Dioxide (CO₂) in your blood. Training tolerance to CO₂ unlocks efficient oxygenation.</p>
+                
+                <p><strong>Nasal Breathing:</strong> Always breathe through the nose. This increases Nitric Oxide production, a vasodilator that protects the lungs and increases oxygen uptake.</p>
+
+                <p><strong>Practice Tips:</strong> Sit upright or lie down. Aim for 10-20 minutes daily. Consistency is key. Breathwork should never feel like a struggle; if you gasp, return to normal nasal breathing.</p>
+
+                <p><strong>The Assessments:</strong> BOLT measures chemistry, not willpower. A goal of 25s is healthy; 40s is elite athletic performance.</p>
+
+                <p><strong>Safety:</strong> Never practice breath-holding while driving or in water. Consult a doctor if you have known cardiovascular issues.</p>
+
+                <p style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;"><strong>Goal Recommendations:</strong></p>
+                <p>• <strong>Calm & Recovery:</strong> Resonance 5.5, Extended Exhale.<br>
+                • <strong>Instant De-stress:</strong> Physiological Sigh (1-2 mins).<br>
+                • <strong>Improve Fitness:</strong> BOLT, Reduced Breathing.<br>
+                • <strong>Deep Focus:</strong> Box Breathing.<br>
+                • <strong>Onset Sleep:</strong> Sleep 4:6, Humming Breath.</p>
             </div>
             <button class="btn btn-primary" onclick="closeInstructions()">GOT IT</button>
         </div>
@@ -139,16 +153,16 @@
 
     <script>
         const DEFAULTS = {
-            res_55: { name: "Resonance 5.5", cat: "HRV / Recovery", icon: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.48 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.52 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The Gold Standard for HRV coherence training.", safety: "Keep breath light." },
-            ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve to down-regulate.", safety: "Don't force exhale." },
-            box: { name: "Box Breathing", cat: "Focus", icon: "M12 2l-5.5 9h11L12 2zm0 20l5.5-9h-11L12 22z", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "Navy SEAL technique for 'Tactical Calm'.", safety: "Relax into pauses." },
-            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 2, inhale2: 1, exhale: 6, notes: "Fastest way to dump CO2 and lower heart rate.", safety: "Limit to 2 minutes." },
-            sleep: { name: "Sleep 4:6", cat: "Sleep", icon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.12-1.36-.98 1.37-2.58 2.26-4.38 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.8.89-3.4 2.26-4.38C12.92 3.04 12.46 3 12 3z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Whisper-quiet rhythm for deep rest.", safety: "Lying down recommended." },
-            red_br: { name: "Reduced Breathing", cat: "CO₂ Tolerance", icon: "M12 2c-4.41 0-8 3.59-8 8v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.41-3.59-8-8-8zm0 2c3.31 0 6 2.69 6 6v1h-2V7c0-2.21-1.79-4-4-4S6 4.79 6 7v3H4v-1c0-3.31 2.69-6 6-6z", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Buteyko training for CO2 sensitivity.", safety: "Mild air hunger only." },
-            gent_h: { name: "Gentle Exhale Hold", cat: "Breath Control", icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "Oxygen Advantage 'mini pauses'.", safety: "Effortless holds." },
-            rel_478: { name: "4:7:8 Relaxation", cat: "Relaxation", icon: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z", inhale: 4, holdIn: 7, exhale: 8, holdEx: 0, notes: "Andrew Weil's 'Natural Tranquilizer'.", safety: "Stop if dizzy." },
-            hum: { name: "Humming Breath", cat: "Relaxation", icon: "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z", inhale: 4, exhale: 8, notes: "Increase Nitric Oxide production up to 15x.", safety: "Keep hum soft." },
-            bolt: { name: "BOLT Score", cat: "Assessment", icon: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z", inhale: 3, exhale: 3, notes: "Foundation of functional CO2 tolerance testing.", safety: "Sit quietly for 10 mins." }
+            res_55: { name: "Resonance 5.5", cat: "HRV / Recovery", icon: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.48 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.52 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z", inhale: 5.5, holdIn: 0, exhale: 5.5, holdEx: 0, notes: "The 'Gold Standard' for HRV training. At 5.5 breaths per minute, your heart and brainwaves enter a state of 'Coherence.' Popular with pro athletes to maintain peak efficiency. It maximizes the reach of the parasympathetic nervous system.", safety: "Keep the breath light and quiet." },
+            ext_exh: { name: "Extended Exhale 4:6", cat: "Relaxation", icon: "M9 21h6v-2H9v2zm3-19C7.58 2 4 5.58 4 10c0 2.76 1.41 5.2 3.54 6.64.4.28.66.74.66 1.23V20c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.13c0-.49.26-.95.66-1.23C18.59 15.2 20 12.76 20 10c0-4.42-3.58-8-8-8z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Activates the Vagus Nerve. Longer exhales allow CO2 levels to rise slightly, triggering the Bohr Effect—releasing more oxygen into your cells. Use this to down-regulate after high-stress activities.", safety: "If 6s feels like a strain, tailor it to 5s." },
+            box: { name: "Box Breathing", cat: "Focus", icon: "M12 2l-5.5 9h11L12 2zm0 20l5.5-9h-11L12 22z", inhale: 4, holdIn: 4, exhale: 4, holdEx: 4, notes: "The Navy SEAL technique for 'Tactical Calm.' Equal phases stabilize the nervous system and clear 'mental fog.' It is fundamental for building CO2 tolerance and emotional regulation before high-stakes events.", safety: "Ensure holds are relaxed pauses." },
+            sigh: { name: "Physiological Sigh", cat: "Stress Reset", icon: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z", inhale: 2, inhale2: 1, exhale: 6, notes: "The fastest biological way to dump excess CO2. You will see a 'stutter' expansion in the orb: one inhale followed by a sharp second inhale to re-inflate alveoli. The subsequent long exhale resets heart rate instantly.", safety: "Limit to 2 minutes per session." },
+            sleep: { name: "Sleep 4:6", cat: "Sleep", icon: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.12-1.36-.98 1.37-2.58 2.26-4.38 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.8.89-3.4 2.26-4.38C12.92 3.04 12.46 3 12 3z", inhale: 4, holdIn: 0, exhale: 6, holdEx: 0, notes: "Whisper-quiet rhythm for deep rest. Gentle, sedating flow. Focus on the air being so light and quiet that even you cannot hear your own breathing as you drift off.", safety: "Practice while preparing for rest." },
+            red_br: { name: "Reduced Breathing", cat: "CO₂ Tolerance", icon: "M12 2c-4.41 0-8 3.59-8 8v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-4.41-3.59-8-8-8zm0 2c3.31 0 6 2.69 6 6v1h-2V7c0-2.21-1.79-4-4-4S6 4.79 6 7v3H4v-1c0-3.31 2.69-6 6-6z", inhale: 3, holdIn: 0, exhale: 4, holdEx: 0, notes: "Core Buteyko/Oxygen Advantage practice. Breathe 20-30% less than you 'want' to, creating a 'tolerable air hunger.' This trains the brain to be less reactive to CO2, improving oxygen delivery.", safety: "Air hunger should be mild." },
+            gent_h: { name: "Gentle Exhale Hold", cat: "Breath Control", icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z", inhale: 4, holdIn: 0, exhale: 4, holdEx: 5, notes: "Oxygen Advantage 'mini pauses' to prevent chronic over-breathing. They help reset the respiratory center and ensure oxygen reaches your cells efficiently via the Bohr Effect.", safety: "The hold should feel effortless." },
+            rel_478: { name: "4:7:8 Relaxation", cat: "Relaxation", icon: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z", inhale: 4, holdIn: 7, exhale: 8, holdEx: 0, notes: "The 'Natural Tranquilizer.' The long hold allows oxygen to saturate the blood, while the very long exhale triggers a deep vagal response. Potent for neutralizing acute anxiety.", safety: "Shorten timings proportionally if lightheaded." },
+            hum: { name: "Humming Breath", cat: "Relaxation", icon: "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z", inhale: 4, exhale: 8, notes: "Humming increases Nitric Oxide production up to 15x. NO is a vasodilator and antiviral. The vibration also 'massages' the vagus nerve to induce profound meditative stillness.", safety: "Hum should be soft." },
+            bolt: { name: "BOLT Score", cat: "Assessment", icon: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z", inhale: 3, exhale: 3, notes: "The Body Oxygen Level Test. CONDUCT: One normal nasal breath in, one normal nasal out, then hold. Timer starts automatically. STOP at the first definite urge to breathe (swallow/contraction).", safety: "Sit quietly for 10 mins before testing." }
         };
 
         const CUES = { Inhale: ["Expand belly", "Breathe into ribs", "Soft inhale"], Exhale: ["Let it fall out", "Soften jaw", "Release tension"], Hold: ["Stillness", "Silence", "Soften"] };
