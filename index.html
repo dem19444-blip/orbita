@@ -182,6 +182,7 @@
             activeTrack = document.getElementById(val);
             if (activeTrack) { 
                 activeTrack.currentTime = 0; 
+                activeTrack.volume = 0.3;
                 activeTrack.play().catch(e => console.log("Play blocked"));
             }
         }
