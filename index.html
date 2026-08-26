@@ -178,19 +178,43 @@
         let currentId = null, tailorData = JSON.parse(localStorage.getItem('Orbita_tailor_v24')) || {}, boltHistory = JSON.parse(localStorage.getItem('Orbita_bolt_v24')) || [];
         let audioCtx = null, activeTrack = null, sessionTimeout = null, phaseInterval = null, overallInterval = null, wakeLock = null, startTime = 0;
 
-        function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function getAudio() { 
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Create a dedicated volume controller (GainNode) for ambient music
+        ambientGain = audioCtx.createGain();
+        ambientGain.connect(audioCtx.destination);
+    }
+    return audioCtx; 
+}
+
+function startAmbient() {
+    const val = document.getElementById('ambient-selector').value;
+    const ctx = getAudio();
+    
+    // Stop any currently playing track
+    if (activeTrack) { activeTrack.pause(); }
+    
+    if (val === 'track-none') return;
+    
+    activeTrack = document.getElementById(val);
+    if (activeTrack) { 
+        activeTrack.currentTime = 0; 
         
-        function startAmbient() {
-            const val = document.getElementById('ambient-selector').value;
-            if (activeTrack) { activeTrack.pause(); activeTrack = null; }
-            if (val === 'track-none') return;
-            activeTrack = document.getElementById(val);
-            if (activeTrack) { 
-                activeTrack.currentTime = 0; 
-                activeTrack.volume = 0.05; 
-                activeTrack.play().catch(e => console.log("Play blocked"));
-            }
+        // Connect the track to the mixer if it hasn't been connected yet
+        if (!activeTrack.connectedToSource) {
+            const source = ctx.createMediaElementSource(activeTrack);
+            source.connect(ambientGain);
+            activeTrack.connectedToSource = true;
         }
+        
+        // ADJUST VOLUME HERE: 0.02 is 2% volume. 
+        // 0.05 would be 5%, etc.
+        ambientGain.gain.setValueAtTime(0.02, ctx.currentTime); 
+        
+        activeTrack.play().catch(e => console.log("Play blocked"));
+    }
+}
 
         function playBreath(type, duration) {
             const ctx = getAudio();
